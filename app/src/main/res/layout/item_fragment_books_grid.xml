@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="300dp" 
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/grid_image"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/default_book_cover" />
+
+    <TextView
+        android:id="@+id/grid_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/grid_image"
+        android:background="#90000000"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
+
+</RelativeLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ptr_pull_to_refresh">Kéo xuống để update</string>
+    <string name="ptr_release_to_refresh">Thả ra để update</string>
+    <string name="ptr_refreshing">Đang update…</string>
+    <string name="ptr_last_updated">Updated: %1$s</string>
+</resources>

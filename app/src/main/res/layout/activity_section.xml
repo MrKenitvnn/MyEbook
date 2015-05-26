@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF" >
+
+    <TextView
+        android:id="@+id/tvDanhMucSach"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="DANH MỤC SÁCH"
+        android:textColor="#000"
+        android:textSize="20sp" />
+
+    <View
+        android:id="@+id/viewDanhMucSach"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/tvDanhMucSach"
+        android:background="#2979FF" />
+
+    <ListView
+        android:id="@+id/lvSection"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/viewDanhMucSach" >
+    </ListView>
+
+    <Button
+        android:id="@+id/btnCloseSection"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#2979FF"
+        android:padding="10dp"
+        android:text="Đóng"
+        android:textColor="#FFF"
+        android:textSize="16sp" />
+
+</RelativeLayout>

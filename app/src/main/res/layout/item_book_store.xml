@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/item_listview_selector"
+    android:padding="5dp" >
+
+    <ImageView
+        android:id="@+id/ivCoverBookStore"
+        android:layout_width="65dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:src="@drawable/default_book_cover" />
+
+    <TextView
+        android:id="@+id/tvNameBookStore"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/ivCoverBookStore"
+        android:layout_toRightOf="@+id/ivCoverBookStore"
+        android:layout_toEndOf="@+id/ivCoverBookStore" />
+
+    <TextView
+        android:id="@+id/tvAuthorBookOnline"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="Author"
+        android:layout_below="@+id/tvNameBookStore"
+        android:layout_toRightOf="@+id/ivCoverBookStore"
+        android:layout_toEndOf="@+id/ivCoverBookStore" />
+
+</RelativeLayout>

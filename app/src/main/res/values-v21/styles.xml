@@ -1,0 +1,17 @@
+<resources>
+
+
+    <!-- Master / Child Example -->
+    <style name="MasterChild" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
+        <item name="colorPrimary">@color/color_toolbar_light</item>
+        <item name="colorPrimaryDark">@color/color_toolbar_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
+        <item name="windowActionModeOverlay">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+
+</resources>
