@@ -20,22 +20,23 @@ import java.util.zip.ZipFile;
 
 @SuppressLint("DefaultLocale")
 public class FileHandler {
-	public static final String 
-							ROOT_FOLDER = ".myebookepub",
-							DATA_FOLDER = "data";
-//	private static ArrayList<File> chapterList = new ArrayList<File>();
-	private static ArrayList<File> cssList = new ArrayList<File>();
+
+	public static final String
+							ROOT_FOLDER	 = "myEbookEpub",
+							DATA_FOLDER  = "data",
+							COVER_FOLDER = "covers",
+							EPUB_FOLDER  = "epubs";
+
+	public static String ROOT_PATH	= Environment.getExternalStorageDirectory().getAbsolutePath()
+												+ File.separator + ROOT_FOLDER + File.separator;
+	public static String DATA_PATH	= ROOT_PATH + DATA_FOLDER + File.separator;
+	public static String EPUB_PATH	= DATA_PATH + EPUB_FOLDER;
+	public static String COVER_PATH	= DATA_PATH + COVER_FOLDER;
 
 	public static String ncxPath;
 	public static String contentPath;
 	public static String coverPath;
 	public static String chapterPath;
-
-	public static String rootPath = Environment.getExternalStorageDirectory()
-									.getAbsolutePath()
-									+ File.separator
-									+ ROOT_FOLDER
-									+ File.separator;
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -43,8 +44,9 @@ public class FileHandler {
 	public static void createRootFolder() {
 		
 		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			Log.d(">>> ken <<<", "No SDCARD");
+			Log.d( ">>> ken <<<", "No SDCARD" );
 		} else {
+
 			// root's app's folder
 			File directory = new File(Environment.getExternalStorageDirectory()
 												+ File.separator + ROOT_FOLDER);
@@ -56,11 +58,16 @@ public class FileHandler {
 			directory.mkdir();
 
 			// data's app's folder
-			File data = new File(Environment
-									.getExternalStorageDirectory()
-									+ File.separator + ROOT_FOLDER + File.separator
-									+ DATA_FOLDER);
+			File data = new File(DATA_PATH);
 			data.mkdir();
+
+			// cover's app's folder
+			File covers = new File(COVER_PATH);
+
+			// epub's app's folder
+			File epubs = new File(EPUB_PATH);
+			covers.mkdir();
+			epubs.mkdir();
 		}
 	}// end-func createRootFolder
 
@@ -72,8 +79,7 @@ public class FileHandler {
 		FileOutputStream fOut			= null;
 		OutputStreamWriter myOutWriter	= null;
 		try {
-			File myFile = new File(rootPath + DATA_FOLDER
-									+ File.separator + file_name);
+			File myFile = new File(ROOT_PATH + DATA_FOLDER + File.separator + file_name);
 			
 			myFile.createNewFile();
 			
@@ -92,24 +98,6 @@ public class FileHandler {
 			}
 		}
 	}// end-func
-
-
-	////////////////////////////////////////////////////////////////////////////////
-
-	public static String createBookFolder(String _bookFolderName) {
-		
-		File aBook = new File(Environment
-								.getExternalStorageDirectory()
-								+ File.separator + ROOT_FOLDER 
-								+ File.separator + _bookFolderName);
-		
-		aBook.mkdirs();
-		
-		return Environment
-				.getExternalStorageDirectory() 
-				+ File.separator + ROOT_FOLDER
-				+ File.separator + _bookFolderName;
-	}
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -223,28 +211,6 @@ public class FileHandler {
 				}
 			}
 		}
-	}
-
-
-	////////////////////////////////////////////////////////////////////////////////
-
-	public static ArrayList<File> getAllCSS(File dir) {
-		
-		File listFile[] = dir.listFiles();
-		if (listFile != null && listFile.length > 0) {
-			for (int i = 0; i < listFile.length; i++) {
-
-				if (listFile[i].isDirectory()) {
-					// fileList.add(listFile[i]);
-					getAllCSS(listFile[i]);
-				} else {
-					if (listFile[i].getName().endsWith(".css")) {
-						cssList.add(listFile[i]);
-					}// end-if
-				}// end-if
-			}// end-for
-		}// end-if
-		return cssList;
 	}
 
 

@@ -43,6 +43,7 @@ public class SectionActivity extends Activity{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_section);
@@ -55,7 +56,7 @@ public class SectionActivity extends Activity{
 		btnCloseSection.setOnClickListener(setOnClickListenerEvent);
 		lvSection.setOnItemClickListener(lvSectionItemClick);
 		
-	}
+	}//end-func onCreate
 
 	@Override
 	protected void onResume() {
@@ -77,9 +78,11 @@ public class SectionActivity extends Activity{
 		
 		@Override
 		public void onClick(View v) {
+
 			returnIntent = new Intent();
 			setResult(RESULT_CANCELED, returnIntent);
 			finish();
+
 		}
 	};// end-func setOnClickListenerEvent
 	
@@ -89,13 +92,16 @@ public class SectionActivity extends Activity{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
+
 			// get object section click
 			SectionOnline item = adapter.getItem(position);
-			
+
+			// setup intent
 			returnIntent = new Intent();
 			returnIntent.putExtra(RESULT, item);
 			setResult(RESULT_OK, returnIntent);
 			finish();
+
 		}
 	};// end-event lvSectionItemClick
 	

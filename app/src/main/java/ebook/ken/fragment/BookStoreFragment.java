@@ -69,21 +69,7 @@ public class BookStoreFragment extends Fragment {
         // Set a listener to be invoked when the list should be refreshed.
 //        lvStore.setPullRotateImage(getResources().getDrawable(R.drawable.rotate_img));
         lvStore.setOnItemClickListener(lvStoreEvent);
-        lvStore.setOnRefreshListener(new OnRefreshListener() {
-
-            @Override
-            public void onRefresh(PullToRefreshBase pullToRefreshBase) {
-                if( MyUtils.isOnline(getActivity()) ){
-                    new AsyncLoadBookByFirstPage().execute();
-                    tvSectionName.setText("Thể loại");
-                    Vars.isInSection = false;
-                } else {
-                    lvStore.onRefreshComplete();
-                    // thong bao khong co ket noi mang
-                    tvIsOnline.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+        lvStore.setOnRefreshListener(lvStoreRefresh);
 
         return view;
     }
@@ -102,21 +88,45 @@ public class BookStoreFragment extends Fragment {
     ////////////////////////////////////////////////////////////////////////////////
     // TODO events
 
+    OnRefreshListener lvStoreRefresh = new OnRefreshListener() {
+        @Override
+        public void onRefresh(PullToRefreshBase pullToRefreshBase) {
+            try {
+
+                if (MyUtils.isOnline(getActivity())) {
+                    new AsyncLoadBookByFirstPage().execute();
+                    tvSectionName.setText("Thể loại");
+                    Vars.isInSection = false;
+                } else {
+                    lvStore.onRefreshComplete();
+                    // thong bao khong co ket noi mang
+                    tvIsOnline.setVisibility(View.VISIBLE);
+                }
+            } catch (Exception ex){
+                Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+            }
+        }
+    };// end-event lvStoreRefresh
+
+
     OnItemClickListener lvStoreEvent = new OnItemClickListener(){
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            try {
+                // get item by position click
+                BookOnline item = adapter.getItem(position - 1);
 
-            // get item by position click
-            BookOnline item = adapter.getItem(position-1);
+                // set book current
+                Vars.currentBookDetail = item;
 
-            // set book current
-            Vars.currentBookDetail = item;
-
-            // start child fragment
-            ((MaterialNavigationDrawer) getActivity()).setFragmentChild(new BookStoreDetailFragment(), item.getBookName());
+                // start child fragment
+                ((MaterialNavigationDrawer) getActivity()).setFragmentChild(new BookStoreDetailFragment(), item.getBookName());
+            } catch ( Exception ex){
+                Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+            }
         }
-    };
+    };// end-event lvStoreEvent
 
 
     OnClickListener llSectionEvent = new OnClickListener() {
@@ -199,7 +209,7 @@ public class BookStoreFragment extends Fragment {
 
 
     ///////////////////////////////////////////////////////////////////////////////////
-    //TODO asynctask
+    //TODO async task
 
     private class AsyncLoadSection extends AsyncTask<Void, Void, List<SectionOnline>> {
 
@@ -258,7 +268,6 @@ public class BookStoreFragment extends Fragment {
     }// end-async AsyncLoadBookByFirstPage
 
 
-
     private class AsyncLoadBookBySection extends AsyncTask<Integer, Void, List<BookOnline>>{
 
         @Override
@@ -288,16 +297,25 @@ public class BookStoreFragment extends Fragment {
         @Override
         protected void onPostExecute(List<BookOnline> result) {
 
-            pbRefresh.setVisibility(View.GONE);
-            lvStore.onRefreshComplete();
+            try {
 
-            // state list on view book of section
-            Vars.isInSection = true;
+                pbRefresh.setVisibility(View.GONE);
+                lvStore.onRefreshComplete();
 
-            if(result != null){
-                adapter = new StoreAdapter(getActivity(), result);
-                lvStore.setAdapter(adapter);
-            }// end-if
+                // state list on view book of section
+                Vars.isInSection = true;
+
+                if (result != null) {
+                    adapter = new StoreAdapter(getActivity(), result);
+                    lvStore.setAdapter(adapter);
+                }// end-if
+
+            } catch (Exception ex){
+                Log.d(">>> ken <<<", "Book store by section: " + Log.getStackTraceString(ex));
+            }
         }
     }// end-async AsyncLoadBookByFirstPage
+
+
+
 }

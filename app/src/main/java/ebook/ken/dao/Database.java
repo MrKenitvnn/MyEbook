@@ -12,13 +12,12 @@ public class Database extends SQLiteOpenHelper {
 	public static String 
 					TABLE_EPUB_BOOK			= "tblEpubBook",
 					epubBook_id				= "epubBookId",
+					epubBook_idOnline		= "idOnline",
 					epubBookName			= "epubBookName",
 					epubBookAuthor			= "epubBookAuthor",
 					epubBookCover			= "epubBookCover",
 					epubBookFolder			= "epubBookFolder",
-					epubBookFilePath		= "epubBookFilePath",
-					epubBookContentFilePath = "epubBookContentFilePath",
-					epubBookNcxFilePath		= "epubBookNcxFilePath";
+					epubBookFilePath		= "epubBookFilePath";
 
 	public static String 
 					TABLE_EPUB_BOOKMARK	= "tblEpubBookmark",
@@ -26,20 +25,20 @@ public class Database extends SQLiteOpenHelper {
 					bookmarkComponentId = "bookmarkComponentId",
 					bookmarkPercent 	= "bookmarkPercent";
 
-	public static String 
-					TABLE_EPUB_CHAPTER	= "tblEpubChapter",
-					chapterId			= "chapterId",
-//					epubBook_id			= "epubBookId",
-					chapterPath 		= "chapterPath",
-					chapterSrc			= "chapterSrc",
-					chapterTitle		= "chapterTitle",
-					chapterPlayOrder 	= "chapterPlayOrder";
+//	public static String
+//					TABLE_EPUB_CHAPTER	= "tblEpubChapter",
+//					chapterId			= "chapterId",
+////					epubBook_id			= "epubBookId",
+//					chapterPath 		= "chapterPath",
+//					chapterSrc			= "chapterSrc",
+//					chapterTitle		= "chapterTitle",
+//					chapterPlayOrder 	= "chapterPlayOrder";
 	
-	public static String 
-					TABLE_EPUB_CSS 	= "tblEpubCss",
-					cssId 			= "cssId",
-//					epubBook_id 	= "epubBookId",
-					cssPath 		= "cssPath";	
+//	public static String
+//					TABLE_EPUB_CSS 	= "tblEpubCss",
+//					cssId 			= "cssId",
+////					epubBook_id 	= "epubBookId",
+//					cssPath 		= "cssPath";
 
 	public static String 
 					TABLE_EPUB_FAVORITE = "tblEpubFavorite",
@@ -57,6 +56,8 @@ public class Database extends SQLiteOpenHelper {
 				= " CREATE TABLE " + TABLE_EPUB_BOOK + " ( "
 				+ epubBook_id
 				+ " Integer primary key autoincrement, "
+				+ epubBook_idOnline
+				+ " text, "
 				+ epubBookName
 				+ " text, "
 				+ epubBookAuthor
@@ -66,10 +67,6 @@ public class Database extends SQLiteOpenHelper {
 				+ epubBookFolder
 				+ " text, "
 				+ epubBookFilePath
-				+ " text, "
-				+ epubBookContentFilePath
-				+ " text, "
-				+ epubBookNcxFilePath
 				+ " text "
 				+ ")";
 		
@@ -83,30 +80,30 @@ public class Database extends SQLiteOpenHelper {
 				+ " text "
 				+ ")";
 		
-		String tblChapter 
-				= " CREATE TABLE " + TABLE_EPUB_CHAPTER + " ( "
-				+ chapterId
-				+ " Integer primary key autoincrement, "
-				+ epubBook_id
-				+ " integer, "
-				+ chapterPath
-				+ " text, "
-				+ chapterSrc
-				+ " text, "
-				+ chapterTitle
-				+ " text, "
-				+ chapterPlayOrder
-				+ " integer "		
-				+ ")";
-		String tblCss 
-				= " CREATE TABLE " + TABLE_EPUB_CSS + " ( "
-				+ cssId
-				+ " Integer primary key autoincrement, "
-				+ epubBook_id
-				+ " integer, "
-				+ cssPath
-				+ " text "
-				+" ) ";
+//		String tblChapter
+//				= " CREATE TABLE " + TABLE_EPUB_CHAPTER + " ( "
+//				+ chapterId
+//				+ " Integer primary key autoincrement, "
+//				+ epubBook_id
+//				+ " integer, "
+//				+ chapterPath
+//				+ " text, "
+//				+ chapterSrc
+//				+ " text, "
+//				+ chapterTitle
+//				+ " text, "
+//				+ chapterPlayOrder
+//				+ " integer "
+//				+ ")";
+//		String tblCss
+//				= " CREATE TABLE " + TABLE_EPUB_CSS + " ( "
+//				+ cssId
+//				+ " Integer primary key autoincrement, "
+//				+ epubBook_id
+//				+ " integer, "
+//				+ cssPath
+//				+ " text "
+//				+" ) ";
 				
 		
 		String tblFavorite 
@@ -119,18 +116,18 @@ public class Database extends SQLiteOpenHelper {
 		
 		db.execSQL(tblEpubBook);
 		db.execSQL(tblBookmark);
-		db.execSQL(tblChapter);
+//		db.execSQL(tblChapter);
 		db.execSQL(tblFavorite);
-		db.execSQL(tblCss);
+//		db.execSQL(tblCss);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("crop table if exists "+ TABLE_EPUB_BOOK);
 		db.execSQL("crop table if exists "+ TABLE_EPUB_BOOKMARK);
-		db.execSQL("crop table if exists "+ TABLE_EPUB_CHAPTER);
-		db.execSQL("crop table if exists "+ TABLE_EPUB_FAVORITE);
-		db.execSQL("crop table if exists "+ TABLE_EPUB_CSS);
+        db.execSQL("crop table if exists "+ TABLE_EPUB_FAVORITE);
+//		db.execSQL("crop table if exists "+ TABLE_EPUB_CHAPTER);
+//		db.execSQL("crop table if exists "+ TABLE_EPUB_CSS);
 		
 		onCreate(db);
 	}

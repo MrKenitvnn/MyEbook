@@ -10,7 +10,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.util.List;
+
 import ebook.ken.activity.R;
+import ebook.ken.adapter.FragmentHomeListViewAdapter;
+import ebook.ken.dao.BookOfflineDao;
+import ebook.ken.objects.BookOffline;
 import ebook.ken.utils.MyUtils;
 import ebook.ken.utils.Vars;
 
@@ -21,6 +26,7 @@ public class HomeFragment extends Fragment {
 
     private View view;
     private ImageView ivChangeStyle;
+
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -49,18 +55,25 @@ public class HomeFragment extends Fragment {
         if (Vars.isInListView) {
 
             MyUtils.navigationToView((FragmentActivity) getActivity(),
-                    new BooksListViewFragment(), R.id.fmBooksContent);
+                    new HomeListViewFragment(), R.id.fmBooksContent);
             // change image of imageview
             MyUtils.setImageIsGridView(getActivity(), ivChangeStyle);
         } else {
 
             MyUtils.navigationToView((FragmentActivity) getActivity(),
-                    new BooksGridViewFragment(), R.id.fmBooksContent);
+                    new HomeGridViewFragment(), R.id.fmBooksContent);
             // change image of imageview
             MyUtils.setImageIsListView(getActivity(), ivChangeStyle);
         }// end-if
 
     }// end-func onStart
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +88,7 @@ public class HomeFragment extends Fragment {
                     Vars.isInListView = false;
                     // replace fragment of books
                     MyUtils.navigationToView( (FragmentActivity) getActivity(),
-                            new  BooksGridViewFragment(),
+                            new HomeGridViewFragment(),
                             R.id.fmBooksContent);
 
                     // change image of imageview
@@ -87,7 +100,7 @@ public class HomeFragment extends Fragment {
 
                     // replace fragment of books
                     MyUtils.navigationToView( (FragmentActivity) getActivity(),
-                            new  BooksListViewFragment(),
+                            new HomeListViewFragment(),
                             R.id.fmBooksContent);
 
                     // change image of imageview

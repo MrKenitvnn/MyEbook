@@ -5,6 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -35,8 +38,13 @@ public class FavoritesFragment extends Fragment {
         // events
         ivChangeStyle.setOnClickListener(ivChangeStyleEvent);
 
+        // enable option menu
+        setHasOptionsMenu(true);
+
         return view;
-    }
+    }// end-func onCreateView
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -57,6 +65,7 @@ public class FavoritesFragment extends Fragment {
         }// end-if
 
     }// end-func onStart
+
 
     ////////////////////////////////////////////////////////////////////////////////
     // Todo events
@@ -95,5 +104,24 @@ public class FavoritesFragment extends Fragment {
             }
         }
     };//end-event ivChangeStyleEvent
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Todo option menu
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        MenuItem item = menu.findItem(R.id.search);
+        item.setVisible(false);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Todo async task
+
+
 
 }
