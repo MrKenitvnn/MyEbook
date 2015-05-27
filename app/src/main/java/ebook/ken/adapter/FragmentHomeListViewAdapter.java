@@ -1,5 +1,6 @@
 package ebook.ken.adapter;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -120,7 +121,7 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		// find InputStream for book
 
 		try {
-			InputStream epubInputStream = new URL(FileHandler.ROOT_PATH + locationModel.getBookFilePath()).openStream();
+			InputStream epubInputStream = new FileInputStream(FileHandler.ROOT_PATH + locationModel.getBookFilePath());
 
 			Book book = (new EpubReader()).readEpub(epubInputStream);
 
