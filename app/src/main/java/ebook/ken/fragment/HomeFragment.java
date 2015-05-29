@@ -14,6 +14,7 @@ import java.util.List;
 
 import ebook.ken.activity.R;
 import ebook.ken.adapter.FragmentHomeListViewAdapter;
+import ebook.ken.dao.BookFavoriteDao;
 import ebook.ken.dao.BookOfflineDao;
 import ebook.ken.objects.BookOffline;
 import ebook.ken.utils.MyUtils;
@@ -26,6 +27,8 @@ public class HomeFragment extends Fragment {
 
     private View view;
     private ImageView ivChangeStyle;
+
+    public static BookFavoriteDao bookFavoriteDao;
 
 
 
@@ -43,6 +46,9 @@ public class HomeFragment extends Fragment {
         // events
         ivChangeStyle.setOnClickListener(ivChangeStyleEvent);
 
+        // create favorite dao
+        bookFavoriteDao = new BookFavoriteDao(getActivity());
+
         return view;
     }// end-func onCreateView
 
@@ -50,6 +56,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        // load list favorites
+        Vars.listAllFavorites = bookFavoriteDao.loadAllFavorites();
 
         // set first fragment
         if (Vars.isInListView) {

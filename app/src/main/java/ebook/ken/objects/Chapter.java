@@ -7,11 +7,31 @@ public class Chapter {
 	private String chapterTitle		 = "";
 	private String chapterContent	 = "";
 	private int chapterPercent		 = 0;
+	private String chapterPath		 = "";
+	private String chapterSrc		 = "";
 
 	
 	////////////////////////////////////////////////////////////////////////////////
-	
-	// getters & setters
+	// TODO getters & setters
+
+	public String getChapterSrc() {
+		return chapterSrc;
+	}
+
+	public Chapter setChapterSrc(String chapterSrc) {
+		this.chapterSrc = chapterSrc;
+		return this;
+	}
+
+	public String getChapterPath() {
+		return chapterPath;
+	}
+
+	public Chapter setChapterPath(String chapterPath) {
+		this.chapterPath = chapterPath;
+		return this;
+	}
+
 	public int getChapterId() {
 		return chapterId;
 	}

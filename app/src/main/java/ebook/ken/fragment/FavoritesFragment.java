@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import ebook.ken.activity.R;
+import ebook.ken.dao.BookFavoriteDao;
 import ebook.ken.utils.MyUtils;
 import ebook.ken.utils.Vars;
 
@@ -24,6 +25,8 @@ public class FavoritesFragment extends Fragment {
     private View view;
     private ImageView ivChangeStyle;
 
+    public static BookFavoriteDao bookFavoriteDao;
+
 
     ////////////////////////////////////////////////////////////////////////////////
     // Todo fragment life cycle
@@ -34,6 +37,12 @@ public class FavoritesFragment extends Fragment {
 
         // init controls
         ivChangeStyle = (ImageView) view.findViewById(R.id.ivChangeStyle);
+
+        // setup dao
+        bookFavoriteDao = new BookFavoriteDao(getActivity());
+
+        // set list book favorites
+        Vars.listAllBookFavorites = bookFavoriteDao.loadAllBookOfFavorites();
 
         // events
         ivChangeStyle.setOnClickListener(ivChangeStyleEvent);

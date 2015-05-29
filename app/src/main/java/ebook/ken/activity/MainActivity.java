@@ -47,9 +47,8 @@ public class MainActivity extends MaterialNavigationDrawer {
 
     @Override
     protected void onStart() {
-
+        super.onStart();
         try {
-            super.onStart();
             this.setHomeAsUpIndicator(R.drawable.ic_action_back_white);
 
             // check is first run app to create app folder

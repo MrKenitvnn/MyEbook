@@ -27,7 +27,7 @@ import java.util.List;
 
 import ebook.ken.activity.R;
 import ebook.ken.activity.SectionActivity;
-import ebook.ken.adapter.StoreAdapter;
+import ebook.ken.adapter.FragmentBookStoreAdapter;
 import ebook.ken.objects.BookOnline;
 import ebook.ken.objects.SectionOnline;
 import ebook.ken.utils.JsonHandler;
@@ -47,7 +47,7 @@ public class BookStoreFragment extends Fragment {
     private TextView tvSectionName, tvIsOnline;
     private ProgressBar pbRefresh;
 
-    private StoreAdapter adapter;
+    private FragmentBookStoreAdapter adapter;
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -190,11 +190,11 @@ public class BookStoreFragment extends Fragment {
                 new AsyncLoadBookByFirstPage().execute();
             } else {
                 if(Vars.isInSection){
-                    adapter = new StoreAdapter(getActivity(), Vars.listBookBySection);
+                    adapter = new FragmentBookStoreAdapter(getActivity(), Vars.listBookBySection);
                     lvStore.setAdapter(adapter);
                     tvSectionName.setText(Vars.currentSection.getSectionName());
                 } else {
-                    adapter = new StoreAdapter(getActivity(), Vars.listBookOnlineFirstPage);
+                    adapter = new FragmentBookStoreAdapter(getActivity(), Vars.listBookOnlineFirstPage);
                     lvStore.setAdapter(adapter);
                     Vars.isInSection = false;
                     tvSectionName.setText("Thể Loại");
@@ -261,7 +261,7 @@ public class BookStoreFragment extends Fragment {
 
             if(result != null){
                 Vars.listBookOnlineFirstPage = result;
-                adapter = new StoreAdapter(getActivity(), result);
+                adapter = new FragmentBookStoreAdapter(getActivity(), result);
                 lvStore.setAdapter(adapter);
             }// end-if
         }
@@ -278,7 +278,7 @@ public class BookStoreFragment extends Fragment {
             tvIsOnline.setVisibility(View.GONE);
 
             // set list empty
-            adapter = new StoreAdapter(getActivity(), new ArrayList<BookOnline>());
+            adapter = new FragmentBookStoreAdapter(getActivity(), new ArrayList<BookOnline>());
             lvStore.setAdapter(adapter);
         }
 
@@ -306,7 +306,7 @@ public class BookStoreFragment extends Fragment {
                 Vars.isInSection = true;
 
                 if (result != null) {
-                    adapter = new StoreAdapter(getActivity(), result);
+                    adapter = new FragmentBookStoreAdapter(getActivity(), result);
                     lvStore.setAdapter(adapter);
                 }// end-if
 

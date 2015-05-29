@@ -1,6 +1,6 @@
 package ebook.ken.objects;
 
-public class FavoriteBook {
+public class BookFavorite {
 	
 	private int favoriteId		= 0;
 	private int bookOfflineId	= 0;
@@ -9,7 +9,7 @@ public class FavoriteBook {
 	////////////////////////////////////////////////////////////////////////////////
 	
 	// constructor
-	public FavoriteBook() {
+	public BookFavorite() {
 	}
 	
 
@@ -20,7 +20,7 @@ public class FavoriteBook {
 		return favoriteId;
 	}
 	
-	public FavoriteBook setFavoriteId(int favoriteId) {
+	public BookFavorite setFavoriteId(int favoriteId) {
 		this.favoriteId = favoriteId;
 		return this;
 	}
@@ -29,7 +29,7 @@ public class FavoriteBook {
 		return bookOfflineId;
 	}
 	
-	public FavoriteBook setBookOfflineId(int bookOfflineId) {
+	public BookFavorite setBookOfflineId(int bookOfflineId) {
 		this.bookOfflineId = bookOfflineId;
 		return this;
 	}

@@ -1,9 +1,6 @@
 package ebook.ken.adapter;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -11,9 +8,12 @@ import java.util.Locale;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
@@ -21,11 +21,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import ebook.ken.activity.R;
+import ebook.ken.fragment.HomeFragment;
+import ebook.ken.myui.imageloader.ImageLoader;
 import ebook.ken.objects.BookOffline;
-import ebook.ken.utils.FileHandler;
 import ebook.ken.utils.JsonHandler;
+import ebook.ken.utils.Vars;
 import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubReader;
 
 public class FragmentHomeListViewAdapter extends BaseAdapter {
 
@@ -33,6 +34,7 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 	private ArrayList<BookOffline>		arraylist;	// danh sách sách trung gian để lọc khi tìm kiếm
 	private LayoutInflater			mInflater;
 	private Book bookEpub;
+	public ImageLoader imageLoader;
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +58,7 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		mLocations		= locations;
 		this.arraylist	= new ArrayList<BookOffline>();
 		this.arraylist	.addAll(locations);
+		imageLoader = new ImageLoader(context);
 	}// end-func
 
 
@@ -70,6 +73,7 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		return 0;
 	}
 
+
 	@Override
 	public Object getItem(int position) {
 		if (mLocations != null && position >= 0 && position < getCount()) {
@@ -77,6 +81,7 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		}
 		return null;
 	}
+
 
 	@Override
 	public long getItemId(int position) {
@@ -86,14 +91,18 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		return position;
 	}
 
+
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+
 		View view = convertView;
 		final ViewHolder viewHolder;
+		// create an instance of EpubBook
+		final BookOffline locationModel = mLocations.get(position);
 
 		if (view == null) {
 			viewHolder	= new ViewHolder();
-			view		= mInflater.inflate(R.layout.item_home_listview, parent, false);
+			view		= mInflater.inflate(R.layout.item_book_listview, parent, false);
 
 			viewHolder.imageView 		= (ImageView) view.findViewById(R.id.ivBooksCoverList);
 			viewHolder.tvEpubBookName 	= (TextView) view.findViewById(R.id.tvBooksName);
@@ -103,7 +112,7 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 			view.setTag(viewHolder);
 		} else if ( ((ViewHolder) convertView.getTag()).needInflate ){
 			viewHolder	= new ViewHolder();
-			view		= mInflater.inflate(R.layout.item_home_listview, parent, false);
+			view		= mInflater.inflate(R.layout.item_book_listview, parent, false);
 			
 			viewHolder.imageView		= (ImageView) view.findViewById(R.id.ivBooksCoverList);
 			viewHolder.tvEpubBookName	= (TextView) view.findViewById(R.id.tvBooksName);
@@ -114,64 +123,49 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
 		}// end-if
-		
-		// create an instance of EpubBook
-		final BookOffline locationModel = mLocations.get(position);
-
-		// find InputStream for book
 
 		try {
-			InputStream epubInputStream = new FileInputStream(FileHandler.ROOT_PATH + locationModel.getBookFilePath());
+			// set data view
+			viewHolder.tvEpubBookName	.setText(locationModel.getBookName());
+			viewHolder.tvEpubBookAuthor	.setText(locationModel.getBookAuthor());
+			// when doesn't have cover
+			if (locationModel.getBookCoverPath() != null) {
+				File imgFile = new File(locationModel.getBookCoverPath());
+				if (imgFile.exists()) {
+					Uri uri	  = Uri.fromFile(imgFile);
+					viewHolder.imageView.setImageURI(uri);
+				}
+			} else {
+				Drawable myDrawable = view.getResources().getDrawable(R.drawable.default_book_cover);
+				viewHolder.imageView.setImageDrawable(myDrawable);
+			}// end-if
 
-			Book book = (new EpubReader()).readEpub(epubInputStream);
+			Log.d(">>> ken <<<", locationModel.getBookCoverPath());
 
-			byte[] asd = book.getCoverImage().getData();
-			Bitmap bm = BitmapFactory.decodeByteArray(asd, 0, asd.length);
-
-//			viewHolder.imageView.setImageBitmap( BitmapFactory.decodeStream(book.getCoverImage().getInputStream()) );
-			viewHolder.imageView.setImageBitmap( bm );
-
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			Log.d(">>> ken <<<", Log.getStackTraceString(ex));
 		}
 
-//		if (locationModel.getBookCoverPath() != null) { // when doesn't have cover
-//			File imgFile = new File(locationModel.getEpubCover());
-//			if (imgFile.exists()) {
-//				Uri uri		= Uri.fromFile(imgFile);
-//				viewHolder	.imageView.setImageURI(uri);
-//			}// end-if
-//		} else {
-//			Drawable myDrawable = view.getResources().getDrawable(R.drawable.default_book_cover);
-//			viewHolder.imageView.setImageDrawable(myDrawable);
-//		}// end-if
 
-		viewHolder.tvEpubBookName	.setText(locationModel.getBookName());
-		viewHolder.tvEpubBookAuthor	.setText(locationModel.getBookAuthor());
+		// with any book, loop though items of list favorites to show checkbox
+		for (int i = 0; i < Vars.listAllFavorites.size(); i++) {
+			if( locationModel.getBookId() == Vars.listAllFavorites.get(i).getBookOfflineId() ){
+				viewHolder.cbFavorite.setChecked(true);
+			}// end-if
+		}// end-for
 
-//		// với mỗi cuốn sách, duyệt qua danh sách yêu thích để hiển thị checkbox
-//		for (int i = 0; i < FragmentBooks.listFavorites.size(); i++) {
-//			if (locationModel.getEpubBook_id() == FragmentBooks
-//													.listFavorites		// danh sách yêu thích
-//													.get(i)				// lấy ra phần tử
-//													.getEpubBook_id())	// lấy ra id sách
-//			{
-//				viewHolder.cbFavorite.setChecked(true);
-//			}// end-if
-//		}// end-for
-//
-//		viewHolder.cbFavorite.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				if (viewHolder.cbFavorite.isChecked()) {
-//					FragmentBooks.favoriteDao
-//									.addEpubFavorite(locationModel.getEpubBook_id());
-//				} else {
-//					FragmentBooks.favoriteDao
-//									.delEpubFavorite(locationModel.getEpubBook_id());
-//				}// end-if
-//			}// end-func
-//		});
+		viewHolder.cbFavorite.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if( viewHolder.cbFavorite.isChecked() ){
+					HomeFragment.bookFavoriteDao.addBookFavorite( locationModel.getBookId() );
+					Vars.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
+				} else {
+					HomeFragment.bookFavoriteDao.delBookFavorite(locationModel.getBookId());
+					Vars.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
+				}// end-if
+			}// end-func
+		});
 
 		return view;
 	}// end-func getView

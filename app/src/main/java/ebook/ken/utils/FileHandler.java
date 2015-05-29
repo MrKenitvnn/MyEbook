@@ -29,9 +29,10 @@ public class FileHandler {
 
 	public static String ROOT_PATH	= Environment.getExternalStorageDirectory().getAbsolutePath()
 												+ File.separator + ROOT_FOLDER + File.separator;
+
 	public static String DATA_PATH	= ROOT_PATH + DATA_FOLDER + File.separator;
-	public static String EPUB_PATH	= DATA_PATH + EPUB_FOLDER;
-	public static String COVER_PATH	= DATA_PATH + COVER_FOLDER;
+	public static String EPUB_PATH	= DATA_PATH + EPUB_FOLDER + File.separator;
+	public static String COVER_PATH	= DATA_PATH + COVER_FOLDER + File.separator;
 
 	public static String ncxPath;
 	public static String contentPath;
@@ -42,34 +43,52 @@ public class FileHandler {
 	////////////////////////////////////////////////////////////////////////////////
 	
 	public static void createRootFolder() {
-		
-		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-			Log.d( ">>> ken <<<", "No SDCARD" );
-		} else {
+		try {
+			if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+				Log.d(">>> ken <<<", "No SDCARD");
+			} else {
 
-			// root's app's folder
-			File directory = new File(Environment.getExternalStorageDirectory()
-												+ File.separator + ROOT_FOLDER);
+				// root's app's folder
+				File directory = new File(ROOT_PATH);
 
-			if (directory.exists()) {
-				deleteBookFolder(directory);
-			}
+				if (directory.exists()) {
+					deleteFolderFromSdcard(directory);
+				}
 
-			directory.mkdir();
+				directory.mkdir();
 
-			// data's app's folder
-			File data = new File(DATA_PATH);
-			data.mkdir();
+				// data's app's folder
+				File data = new File(DATA_PATH);
+				data.mkdir();
 
-			// cover's app's folder
-			File covers = new File(COVER_PATH);
+				// cover's app's folder
+				File covers = new File(COVER_PATH);
 
-			// epub's app's folder
-			File epubs = new File(EPUB_PATH);
-			covers.mkdir();
-			epubs.mkdir();
+				// epub's app's folder
+				File epubs = new File(EPUB_PATH);
+				covers.mkdir();
+				epubs.mkdir();
+			}// end-if
+		} catch ( Exception ex){
+			Log.d( ">>> ken <<<", Log.getStackTraceString(ex) );
 		}
 	}// end-func createRootFolder
+
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	public static String createBookFolder(String _bookFolderName) {
+
+		try {
+			File aBook = new File(EPUB_PATH + _bookFolderName);
+			aBook.mkdirs();
+		} catch ( Exception ex){
+			Log.d( ">>> ken <<<", Log.getStackTraceString(ex) );
+			return  null;
+		}
+		return EPUB_PATH + _bookFolderName + File.separator;
+
+	}// end-func createBookFolder
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -96,13 +115,14 @@ public class FileHandler {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-	}// end-func
+		}// end-try
+
+	}// end-func writeData
 
 
 	////////////////////////////////////////////////////////////////////////////////
 
-	public static boolean deleteBookFolder(File path) {
+	public static boolean deleteFolderFromSdcard(File path) {
 		
 		if (path.exists()) {
 			File[] files = path.listFiles();
@@ -111,25 +131,38 @@ public class FileHandler {
 			}// end-if
 			for (int i = 0; i < files.length; i++) {
 				if (files[i].isDirectory()) {
-					deleteBookFolder(files[i]);
+					deleteFolderFromSdcard(files[i]);
 				} else {
 					files[i].delete();
 				}// end-if
 			}// end-for
 		}// end-if
 		return (path.delete());
-	}
+
+	}// end-func deleteBookFolder
+
+
+	public static boolean deleteFileFromSdcard(String path){
+		File file = new File(path);
+		boolean deleted = file.delete();
+		return deleted;
+	}// end-func deleteFileFromSdcard
 
 
 	////////////////////////////////////////////////////////////////////////////////
 
 	static public void doUnzip(String inputZip, String destinationDirectory)
 			throws IOException {
-		
+
 		int BUFFER = 2048;
-		List<String> zipFiles			= new ArrayList<String>();
-		File sourceZipFile				= new File(inputZip);
-		File unzipDestinationDirectory	= new File(destinationDirectory);
+		List zipFiles = new ArrayList();
+
+//		File tmp = new File(inputZip);
+//		tmp.renameTo( new File(inputZip.substring(0, inputZip.lastIndexOf(".")) + ".zip" ) );
+//		File sourceZipFile = new File(inputZip.substring(0, inputZip.lastIndexOf(".")) + ".zip" );
+
+		File sourceZipFile = new File(inputZip);
+		File unzipDestinationDirectory = new File(destinationDirectory);
 		unzipDestinationDirectory.mkdir();
 
 		ZipFile zipFile;
@@ -137,7 +170,7 @@ public class FileHandler {
 		zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
 
 		// Create an enumeration of the entries in the zip file
-		Enumeration<?> zipFileEntries = zipFile.entries();
+		Enumeration zipFileEntries = zipFile.entries();
 
 		// Process each entry
 		while (zipFileEntries.hasMoreElements()) {
@@ -161,36 +194,40 @@ public class FileHandler {
 			try {
 				// extract file if not a directory
 				if (!entry.isDirectory()) {
-					BufferedInputStream is = new BufferedInputStream( zipFile.getInputStream(entry) );
+					BufferedInputStream is =
+							new BufferedInputStream(zipFile.getInputStream(entry));
 					int currentByte;
 					// establish buffer for writing file
 					byte data[] = new byte[BUFFER];
 
 					// write the current file to disk
-					FileOutputStream fos		= new FileOutputStream(destFile);
-					BufferedOutputStream dest	= new BufferedOutputStream(fos, BUFFER);
+					FileOutputStream fos = new FileOutputStream(destFile);
+					BufferedOutputStream dest =
+							new BufferedOutputStream(fos, BUFFER);
 
 					// read and write until last byte is encountered
 					while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
 						dest.write(data, 0, currentByte);
-					}// end-while
+					}
 					dest.flush();
 					dest.close();
 					is.close();
-				}// end-if
+				}
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
 			}
 		}
 		zipFile.close();
 
-		for (Iterator<String> iter = zipFiles.iterator(); iter.hasNext();) {
-			String zipName = (String) iter.next();
-			doUnzip(zipName, 
-					destinationDirectory 
-					+ File.separatorChar
-					+ zipName.substring( 0,zipName.lastIndexOf(".zip")) );
-		}// end-for
+		for (Iterator iter = zipFiles.iterator(); iter.hasNext();) {
+			String zipName = (String)iter.next();
+			doUnzip(
+					zipName,
+					destinationDirectory +
+							File.separatorChar +
+							zipName.substring(0,zipName.lastIndexOf(".zip"))
+			);
+		}
 
 	}
 
@@ -327,7 +364,7 @@ public class FileHandler {
 		}// end-if
 		
 		return coverPath;
-	}
+	}// end-func getCoverFilePath
 
 
 	////////////////////////////////////////////////////////////////////////////////

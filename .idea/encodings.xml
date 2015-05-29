@@ -5,8 +5,8 @@
     <file url="file://$PROJECT_DIR$/app/libs/PullToRefreshModule" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/activity/MainActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/activity/SectionActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/adapter/FragmentBookStoreAdapter.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/adapter/SectionAdapter.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/adapter/StoreAdapter.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/dao/Database.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/fragment/BookStoreDetailFragment.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/fragment/BookStoreFragment.java" charset="UTF-8" />
@@ -21,10 +21,10 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/myui/imageloader/MemoryCache.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/myui/imageloader/Utils.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/Book.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/BookFavorite.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/BookOffline.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/BookOnline.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/Chapter.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/FavoriteBook.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/objects/SectionOnline.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/utils/FileHandler.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/ebook/ken/utils/JsonHandler.java" charset="UTF-8" />
@@ -62,9 +62,9 @@
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_home.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_home_gridview.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_home_listview.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_book_gridview.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_book_listview.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_book_store.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_home_gridview.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_home_listview.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/item_section.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values-v19" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values-v21" charset="UTF-8" />
@@ -72,5 +72,6 @@
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/dimens.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/styles.xml" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

@@ -25,6 +25,7 @@ public class BookOfflineDao {
 	////////////////////////////////////////////////////////////////////////////////
 
 	public void addBookOffline(BookOffline _epubBook) {
+
 		db = dbhelper.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		try {
@@ -32,7 +33,10 @@ public class BookOfflineDao {
 			values.put(Database.epubBookName, _epubBook.getBookName());
 			values.put(Database.epubBookAuthor, _epubBook.getBookAuthor());
 			values.put(Database.epubBookCover, _epubBook.getBookCoverPath());
-			values.put(Database.epubBookFilePath, _epubBook.getBookFilePath());
+			values.put(Database.epubBookFolder, _epubBook.getBookFolder());
+			values.put(Database.epubBookFolderPath, _epubBook.getBookFolderPath());
+			values.put(Database.epubBookNcxPath, _epubBook.getBookNcxPath());
+			values.put(Database.epubBookOpfPath, _epubBook.getBookOpfPath());
 
 			db.insert(Database.TABLE_EPUB_BOOK, null, values);
 		} finally {
@@ -78,14 +82,22 @@ public class BookOfflineDao {
 			while (!c.isAfterLast()) {
 				epubBook.setBookId(c.getInt(c
 						.getColumnIndex(Database.epubBook_id)));
+				epubBook.setBookIdOnline(c.getInt(c
+						.getColumnIndex(Database.epubBook_idOnline)));
 				epubBook.setBookName(c.getString(c
 						.getColumnIndex(Database.epubBookName)));
 				epubBook.setBookAuthor(c.getString(c
 						.getColumnIndex(Database.epubBookAuthor)));
 				epubBook.setBookCoverPath(c.getString(c
 						.getColumnIndex(Database.epubBookCover)));
-				epubBook.setBookFilePath(c.getString(c
-						.getColumnIndex(Database.epubBookFilePath)));
+				epubBook.setBookFolder(c.getString(c
+						.getColumnIndex(Database.epubBookFolder)));
+				epubBook.setBookFolderPath(c.getString(c
+						.getColumnIndex(Database.epubBookFolderPath)));
+				epubBook.setBookOpfPath(c.getString(c
+						.getColumnIndex(Database.epubBookOpfPath)));
+				epubBook.setBookNcxPath(c.getString(c
+						.getColumnIndex(Database.epubBookNcxPath)));
 
 				c.moveToNext();
 			}
@@ -153,10 +165,17 @@ public class BookOfflineDao {
 						.getColumnIndex(Database.epubBookAuthor)));
 				epubBook.setBookCoverPath(c.getString(c
 						.getColumnIndex(Database.epubBookCover)));
-				epubBook.setBookFilePath(c.getString(c
-						.getColumnIndex(Database.epubBookFilePath)));
 				epubBook.setBookIdOnline(c.getInt(c
 						.getColumnIndex(Database.epubBook_idOnline)));
+
+				epubBook.setBookFolder(c.getString(c
+						.getColumnIndex(Database.epubBookFolder)));
+				epubBook.setBookFolderPath(c.getString(c
+						.getColumnIndex(Database.epubBookFolderPath)));
+				epubBook.setBookOpfPath(c.getString(c
+						.getColumnIndex(Database.epubBookOpfPath)));
+				epubBook.setBookNcxPath(c.getString(c
+						.getColumnIndex(Database.epubBookNcxPath)));
 
 				list.add(epubBook);
 				c.moveToNext();
@@ -173,7 +192,28 @@ public class BookOfflineDao {
 
 	////////////////////////////////////////////////////////////////////////////////
 
+	public int getLastId() {
 
+		int id = 0;
+		db = dbhelper.getWritableDatabase();
+
+		String query = "select MAX(" + Database.epubBook_id + ") from "
+				+ Database.TABLE_EPUB_BOOK;
+
+		Cursor c = db.rawQuery(query, null);
+		try {
+			if (c != null && c.getCount() > 0) {
+				c.moveToFirst();
+				id = c.getInt(0);
+			}
+		} finally {
+			c.close();
+			db.close();
+		}
+
+		return id;
+
+	}// end-func getLastId
 
 
 	////////////////////////////////////////////////////////////////////////////////

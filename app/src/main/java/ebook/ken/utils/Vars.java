@@ -4,6 +4,7 @@ import android.app.Application;
 
 import java.util.List;
 
+import ebook.ken.objects.BookFavorite;
 import ebook.ken.objects.BookOffline;
 import ebook.ken.objects.BookOnline;
 import ebook.ken.objects.SectionOnline;
@@ -22,7 +23,6 @@ public class Vars extends Application{
 	// check is in section view
 	public static boolean isInSection  = false;
 
-
 	// check first time open section activity
 
 	
@@ -39,6 +39,9 @@ public class Vars extends Application{
 	public static List<BookOffline> listBookOffline 		= null;
 	public static BookOnline currentBookDetail				= null;
 	public static SectionOnline currentSection				= null;
+
+	public static List<BookOffline> listAllBookFavorites	= null;
+	public static List<BookFavorite> listAllFavorites		= null;
 	
 	
 }

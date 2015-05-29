@@ -16,7 +16,7 @@ import ebook.ken.objects.BookOnline;
 import ebook.ken.utils.JsonHandler;
 
 
-public class StoreAdapter extends ArrayAdapter<BookOnline>{
+public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
 	
 	private ImageView ivCover;
 	private TextView tvNameBookOnline, tvAuthorBookOnline;
@@ -26,7 +26,7 @@ public class StoreAdapter extends ArrayAdapter<BookOnline>{
 	////////////////////////////////////////////////////////////////////////////////
 	// TODO 
 	
-	public StoreAdapter(Context context, List<BookOnline> listData) {
+	public FragmentBookStoreAdapter(Context context, List<BookOnline> listData) {
 		super(context, R.layout.item_book_store, listData);
 		imageLoader = new ImageLoader(context);
 	}

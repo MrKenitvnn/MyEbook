@@ -12,8 +12,8 @@ public abstract class Book implements Serializable{
 
 	
 	////////////////////////////////////////////////////////////////////////////////
-		
-	// getters & setters
+	// TODO getters & setters
+
 	public int getBookId() {
 		return bookId;
 	}

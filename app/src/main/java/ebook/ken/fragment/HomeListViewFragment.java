@@ -1,25 +1,36 @@
 package ebook.ken.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import ebook.ken.activity.R;
 import ebook.ken.adapter.FragmentHomeListViewAdapter;
 import ebook.ken.dao.BookOfflineDao;
 import ebook.ken.objects.BookOffline;
+import ebook.ken.utils.FileHandler;
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.epub.EpubReader;
 
 
 public class HomeListViewFragment extends Fragment {
 
 	// define variable
-
 
 	// UI
 	private View view;
@@ -33,6 +44,7 @@ public class HomeListViewFragment extends Fragment {
 
 	// adapter
 	private FragmentHomeListViewAdapter adapter;
+
 
 	////////////////////////////////////////////////////////////////////////////////
 	// TODO fragment life cycle
@@ -48,8 +60,12 @@ public class HomeListViewFragment extends Fragment {
 
 
 		// events
+		lvHome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
+			}
+		});
 
 		return view;
 	}// end-func onCreateView

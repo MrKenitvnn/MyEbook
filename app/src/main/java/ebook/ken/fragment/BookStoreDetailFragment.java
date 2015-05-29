@@ -19,7 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -27,9 +29,11 @@ import java.net.URLConnection;
 
 import ebook.ken.activity.R;
 import ebook.ken.dao.BookOfflineDao;
+import ebook.ken.dao.ChapterDAO;
 import ebook.ken.objects.Book;
 import ebook.ken.objects.BookOffline;
 import ebook.ken.objects.BookOnline;
+import ebook.ken.utils.BookOfflineHandler;
 import ebook.ken.utils.FileHandler;
 import ebook.ken.utils.JsonHandler;
 import ebook.ken.utils.Vars;
@@ -47,6 +51,7 @@ public class BookStoreDetailFragment extends Fragment {
     private TextView tvAuthorStoreDetail, tvDescription;
 
     private BookOfflineDao bookOfflineDao;
+    private ChapterDAO chapterDAO;
 
 
 
@@ -75,6 +80,7 @@ public class BookStoreDetailFragment extends Fragment {
 
         // open dao
         bookOfflineDao = new BookOfflineDao(getActivity());
+        chapterDAO     = new ChapterDAO(getActivity());
 
         return view;
     }
@@ -86,7 +92,7 @@ public class BookStoreDetailFragment extends Fragment {
     OnClickListener btnDownloadEvent = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            new AsyncDownLoadBook().execute(Vars.currentBookDetail);
+            new AsyncDownLoadBook().execute();
         }
     };
 
@@ -120,7 +126,7 @@ public class BookStoreDetailFragment extends Fragment {
         switch (id) {
             case progress_bar_type: // we set this to 0
                 pDialog = new ProgressDialog(getActivity());
-                pDialog.setMessage("Downloading file. Please wait...");
+                pDialog.setMessage("Downloading. Please wait...");
                 pDialog.setIndeterminate(false);
                 pDialog.setMax(100);
                 pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -141,7 +147,7 @@ public class BookStoreDetailFragment extends Fragment {
     }
 
 
-    class AsyncDownLoadBook extends AsyncTask<BookOnline, String, Boolean>{
+    class AsyncDownLoadBook extends AsyncTask<Void, String, Boolean>{
 
         @Override
         protected void onPreExecute() {
@@ -150,12 +156,10 @@ public class BookStoreDetailFragment extends Fragment {
         }
 
         @Override
-        protected Boolean doInBackground(BookOnline... params) {
+        protected Boolean doInBackground(Void... params) {
 
-            BookOnline itemBook = params[0];
-
-            String epubPath = itemBook.getBookCoverPath();
-            String coverPath = itemBook.getBookFilePath();
+            BookOnline itemBook = Vars.currentBookDetail;
+            String epubPath = itemBook.getBookFilePath();
 
             // download file
             try{
@@ -165,69 +169,89 @@ public class BookStoreDetailFragment extends Fragment {
                 }
 
                 // get url
-                URL urlEpub = new URL(JsonHandler.BASE_URL + epubPath);
-                URL urlCover = new URL(JsonHandler.BASE_URL + coverPath);
+                URL url = new URL(JsonHandler.BASE_URL + epubPath);
 
                 // connect
-                URLConnection connectionEpub = urlEpub.openConnection();
+                URLConnection connectionEpub = url.openConnection();
                 connectionEpub.connect();
 
-//                URLConnection connectionCover = urlEpub.openConnection();
-//                connectionCover.connect();
-
                 // total length of file
-//                int length = connectionEpub.getContentLength() + connectionCover.getContentLength();
                 int length = connectionEpub.getContentLength();
 
                 // download file
-                InputStream inputEpub = new BufferedInputStream(urlEpub.openStream());
-//                InputStream inputCover = new BufferedInputStream(urlCover.openStream());
+                InputStream input = new BufferedInputStream(url.openStream());
 
                 // Output stream
-                OutputStream outputEpub = new FileOutputStream(FileHandler.ROOT_PATH + itemBook.getBookFilePath());
-//                OutputStream outputCover = new FileOutputStream(FileHandler.ROOT_PATH + itemBook.getBookCoverPath());
+                OutputStream output = new FileOutputStream(FileHandler.ROOT_PATH + itemBook.getBookFilePath());
 
-                byte dataCover[] = new byte[1024];
-                byte dataEpub[] = new byte[1024];
+                byte data[] = new byte[1024];
 
-                int countCover, countEpub;
+                int count;
                 long total = 0;
 
-
-                while ((countEpub = inputEpub.read(dataEpub)) != -1) {
-                    total += countEpub;
+                while ((count = input.read(data)) != -1) {
+                    total += count;
                     // writing data to file
-                    outputEpub.write(dataEpub, 0, countEpub);
+                    output.write(data, 0, count);
 
                     // After this onProgressUpdate will be called
                     publishProgress("" + (int) ((total * 100) / length));
                 }
 
-//                while ((countCover = inputCover.read(dataCover)) != -1) {
-//                    // writing data to file
-//                    outputCover.write(dataCover, 0, countCover);
-//                }
-
                 // flushing output
-                outputEpub.flush();
+                output.flush();
 
                 // closing streams
-                outputEpub.close();
-                inputEpub.close();
+                output.close();
+                input.close();
 
-                // write data to database
-                BookOffline bookOffline = new BookOffline();
+                try {
+                    String ncxFilePath = "";
+                    String opfFilePath = "";
+                    String coverFilePath = "";
 
-                bookOffline.setBookIdOnline(itemBook.getBookId())
-                            .setBookFilePath(itemBook.getBookFilePath())
-                            .setBookCoverPath(itemBook.getBookCoverPath())
-                            .setBookAuthor(itemBook.getBookAuthor())
-                            .setBookName(itemBook.getBookName());
+//                    BookOnline itemBook = Vars.currentBookDetail;
+                    BookOffline bookOffline = new BookOffline();
 
-                bookOfflineDao.addBookOffline(bookOffline);
+                    // step 1: create folder of book
+                    String bookFolder       = String.valueOf(bookOfflineDao.getLastId());
+                    String bookFolderPath   = FileHandler.createBookFolder(bookFolder);
+                    String pathExtract      = FileHandler.ROOT_PATH + itemBook.getBookFilePath();
+
+                    // step 2: extract file
+                    FileHandler.doUnzip(FileHandler.ROOT_PATH + itemBook.getBookFilePath(), bookFolderPath);
+
+                    // step 3: delete file epub
+                    FileHandler.deleteFileFromSdcard(pathExtract);
+
+                    // step 4: find ncx, opf, cover path
+                    ncxFilePath   = FileHandler.getNcxFilePath(FileHandler.EPUB_PATH + bookFolder);
+                    opfFilePath   = FileHandler.getContentFilePath(FileHandler.EPUB_PATH + bookFolder);
+                    coverFilePath = FileHandler.getCoverFilePath(FileHandler.EPUB_PATH + bookFolder);
+
+                    // step 5: write data to database
+                    bookOffline.setBookIdOnline(itemBook.getBookId())
+                                .setBookFilePath(itemBook.getBookFilePath())
+                                .setBookAuthor(itemBook.getBookAuthor())
+                                .setBookName(itemBook.getBookName());
+                    bookOffline .setBookFolder(bookFolder)
+                                .setBookFolderPath(bookFolderPath)
+                                .setBookNcxPath(ncxFilePath)
+                                .setBookOpfPath(opfFilePath)
+                                .setBookCoverPath(coverFilePath);
+
+                    bookOfflineDao.addBookOffline(bookOffline);
+                    //  ghi chapter
+                    chapterDAO.addListChapter(BookOfflineHandler
+                            .listEpubChapterData(bookOffline));
+
+                } catch (Exception ex) {
+                    Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+                }
 
             } catch (Exception ex){
                 Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+                return false;
             }
 
             return true;
@@ -246,7 +270,8 @@ public class BookStoreDetailFragment extends Fragment {
             dismissDialog(progress_bar_type);
 
             if( result ){
-                Toast.makeText( getActivity(), "Tải thành công: " + Vars.currentBookDetail.getBookName(), Toast.LENGTH_SHORT ).show();
+                Toast.makeText(getActivity(), "Tải thành công: " + Vars.currentBookDetail.getBookName(), Toast.LENGTH_SHORT).show();
+
             } else {
                 Toast.makeText( getActivity(), "Cuốn sách này đã có!", Toast.LENGTH_SHORT ).show();
             }
