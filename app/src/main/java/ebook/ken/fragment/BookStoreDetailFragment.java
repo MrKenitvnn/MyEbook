@@ -285,5 +285,4 @@ public class BookStoreDetailFragment extends Fragment {
 
 
 
-
 }

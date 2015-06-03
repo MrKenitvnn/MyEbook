@@ -12,6 +12,7 @@ import ebook.ken.fragment.FavoritesFragment;
 import ebook.ken.fragment.HomeFragment;
 import ebook.ken.utils.FileHandler;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
+import nl.siegmann.epublib.epub.Main;
 
 
 public class MainActivity extends MaterialNavigationDrawer {
@@ -114,6 +115,12 @@ public class MainActivity extends MaterialNavigationDrawer {
     ////////////////////////////////////////////////////////////////////////////////
     // Todo anything else
 
+    // TODO: hardware
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        MainActivity.this.finish();
+    }
 
 
 }
