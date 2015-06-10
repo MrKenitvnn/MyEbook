@@ -23,7 +23,7 @@ public class MainActivity extends MaterialNavigationDrawer {
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Todo activity life cycle
+    // TODO: activity life cycle
 
     @Override
     public void init(Bundle bundle) {
