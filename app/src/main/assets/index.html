@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Monocle Dickens test</title>
+
+    <link rel="stylesheet" type="text/css" href="monocore.css" />
+    <link rel="stylesheet" type="text/css" href="monoctrl.css" />
+    <link rel="stylesheet" type="text/css" href="finalebookstyle.css" />
+
+    <script type="text/javascript" src="monocore.js"></script>
+    <script type="text/javascript" src="monoctrl.js"></script>
+	<script>
+		var bookData = {
+			  getComponents: function () {
+				return [
+				  'Text/chapter1.xhtml',
+				  'Text/chapter2.xhtml'
+				];
+			  },
+			  getContents: function () {
+				return [
+				  {
+					title: "Chapter 1",
+					src: "Text/chapter1.xhtml"
+				  },
+				  {
+					title: "Chapter 2",
+					src: "Text/chapter2.xhtml"
+				  }
+				]
+			  },
+			  getComponent: function (componentId) {
+				return {
+				  'Text/chapter1.xhtml':
+					'<h1>Chapter 1</h1><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p><p>Hello world</p>',
+				  'Text/chapter2.xhtml':
+					'<p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p><p>Chapter 2 continued.</p>'
+				}[componentId];
+			  },
+			  getMetaData: function(key) {
+				return {
+				  title: "A book",
+				  creator: "Inventive Labs"
+				}[key];
+			  }
+			}
+	</script>
+  </head>
+
+  <body>
+    <div id="readerBg">
+      <div class="board"></div>
+      <div class="jacket"></div>
+      <div class="dummyPage"></div>
+      <div class="dummyPage"></div>
+      <div class="dummyPage"></div>
+      <div class="dummyPage"></div>
+      <div class="dummyPage"></div>
+      <div class="dummyPage"></div>
+    </div>
+
+    <div id="readerCntr">
+      <div id="reader"></div>
+    </div>
+
+    <script type="text/javascript" src="finalebookscript.js"></script>
+  </body>
+
+</html>

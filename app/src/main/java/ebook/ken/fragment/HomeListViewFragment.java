@@ -1,5 +1,6 @@
 package ebook.ken.fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import ebook.ken.activity.R;
+import ebook.ken.activity.ReadingActivity;
 import ebook.ken.adapter.FragmentHomeListViewAdapter;
 import ebook.ken.dao.BookOfflineDao;
 import ebook.ken.objects.BookOffline;
@@ -58,23 +61,11 @@ public class HomeListViewFragment extends Fragment {
 		// init controls
 		lvHome = (ListView) view.findViewById(R.id.lvHome);
 
-
 		// events
-		lvHome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-			}
-		});
+		lvHome.setOnItemClickListener(lvHomeEvent);
 
 		return view;
 	}// end-func onCreateView
-
-
-	@Override
-	public void onStart() {
-		super.onStart();
-	}
 
 
 	@Override
@@ -101,6 +92,17 @@ public class HomeListViewFragment extends Fragment {
 
 	////////////////////////////////////////////////////////////////////////////////
 	// TODO events
+
+	OnItemClickListener lvHomeEvent = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			BookOffline book = (BookOffline) adapter.getItem(position);
+			Intent intent = new Intent(getActivity(), ReadingActivity.class);
+			intent.putExtra("BOOK", book);
+			startActivity(intent);
+		}
+	};
 
 
 

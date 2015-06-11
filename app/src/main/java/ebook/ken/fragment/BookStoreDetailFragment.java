@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,9 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -29,8 +26,7 @@ import java.net.URLConnection;
 
 import ebook.ken.activity.R;
 import ebook.ken.dao.BookOfflineDao;
-import ebook.ken.dao.ChapterDAO;
-import ebook.ken.objects.Book;
+import ebook.ken.dao.ChapterDao;
 import ebook.ken.objects.BookOffline;
 import ebook.ken.objects.BookOnline;
 import ebook.ken.utils.BookOfflineHandler;
@@ -51,7 +47,7 @@ public class BookStoreDetailFragment extends Fragment {
     private TextView tvAuthorStoreDetail, tvDescription;
 
     private BookOfflineDao bookOfflineDao;
-    private ChapterDAO chapterDAO;
+    private ChapterDao chapterDao;
 
 
 
@@ -80,7 +76,7 @@ public class BookStoreDetailFragment extends Fragment {
 
         // open dao
         bookOfflineDao = new BookOfflineDao(getActivity());
-        chapterDAO     = new ChapterDAO(getActivity());
+        chapterDao = new ChapterDao(getActivity());
 
         return view;
     }
@@ -242,7 +238,7 @@ public class BookStoreDetailFragment extends Fragment {
 
                     bookOfflineDao.addBookOffline(bookOffline);
                     //  ghi chapter
-                    chapterDAO.addListChapter(BookOfflineHandler
+                    chapterDao.addListChapter(BookOfflineHandler
                             .listEpubChapterData(bookOffline));
 
                 } catch (Exception ex) {

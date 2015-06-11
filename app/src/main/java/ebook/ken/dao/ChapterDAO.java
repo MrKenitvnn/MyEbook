@@ -11,11 +11,11 @@ import android.util.Log;
 
 import ebook.ken.objects.Chapter;
 
-public class ChapterDAO {
+public class ChapterDao {
 	Database dbhelper;
 	SQLiteDatabase db;
 
-	public ChapterDAO(Context _context) {
+	public ChapterDao(Context _context) {
 		dbhelper = new Database(_context);
 	}
 
