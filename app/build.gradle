@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.0"
+    compileOptions.encoding = 'UTF-8' // write your encoding here
 
     defaultConfig {
         applicationId "activity.ken.ebook.myebookepub"

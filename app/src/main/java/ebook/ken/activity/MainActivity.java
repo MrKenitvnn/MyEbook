@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import ebook.ken.dao.Database;
 import ebook.ken.fragment.BookStoreFragment;
@@ -17,10 +18,8 @@ import nl.siegmann.epublib.epub.Main;
 
 public class MainActivity extends MaterialNavigationDrawer {
 
-
     private SharedPreferences prefs = null;
     private Database database;
-
 
     ////////////////////////////////////////////////////////////////////////////////
     // TODO: activity life cycle
@@ -116,10 +115,16 @@ public class MainActivity extends MaterialNavigationDrawer {
     // Todo anything else
 
     // TODO: hardware
-    @Override
+//    @Override
     public void onBackPressed() {
         super.onBackPressed();
+
+        if (getCurrentSection().getTargetFragment() instanceof BookStoreFragment) {
+            Toast.makeText(this, "?ây là book store", Toast.LENGTH_SHORT).show();
+        }
+
         MainActivity.this.finish();
+
     }
 
 

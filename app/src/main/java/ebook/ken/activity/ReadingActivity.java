@@ -272,7 +272,7 @@ public class ReadingActivity extends Activity {
 		@SuppressWarnings("deprecation")
 		protected void onPostExecute(final Void unused) {
 			webview.getSettings().setJavaScriptEnabled(true);
-			webview.getSettings().setAllowFileAccessFromFileURLs(true);
+//			webview.getSettings().setAllowFileAccessFromFileURLs(true);
 			webview.setWebViewClient(new WebViewClient());
 			webview.setWebChromeClient(new WebChromeClient());
 			webview.addJavascriptInterface(this, "android");
