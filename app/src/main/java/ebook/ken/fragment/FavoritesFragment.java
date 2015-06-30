@@ -59,7 +59,7 @@ public class FavoritesFragment extends Fragment {
         super.onStart();
 
         // set first fragment
-        if (Vars.isInListView) {
+        if (!Vars.isInListView) {
 
             MyUtils.navigationToView((FragmentActivity) getActivity(),
                     new FavoritesListViewFragment(), R.id.fmBooksContent);

@@ -2,6 +2,8 @@ package ebook.ken.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +13,7 @@ import ebook.ken.dao.Database;
 import ebook.ken.fragment.BookStoreFragment;
 import ebook.ken.fragment.FavoritesFragment;
 import ebook.ken.fragment.HomeFragment;
+import ebook.ken.fragment.InfoFragment;
 import ebook.ken.utils.FileHandler;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import nl.siegmann.epublib.epub.Main;
@@ -35,6 +38,7 @@ public class MainActivity extends MaterialNavigationDrawer {
             this.addSection(newSection("Home", R.drawable.ic_action_back_white, new HomeFragment()));
             this.addSection(newSection("Favorites", R.drawable.ic_action_back_white, new FavoritesFragment()));
             this.addSection(newSection("Book Store", R.drawable.ic_action_back_white, new BookStoreFragment()));
+            this.addSection(newSection("Group", R.drawable.ic_action_back_white, new InfoFragment()));
 
             // get shared preferences for create app folder
             prefs = getSharedPreferences("ebook.ken.activity", MODE_PRIVATE);
@@ -119,12 +123,12 @@ public class MainActivity extends MaterialNavigationDrawer {
     public void onBackPressed() {
         super.onBackPressed();
 
-        if (getCurrentSection().getTargetFragment() instanceof BookStoreFragment) {
-            Toast.makeText(this, "?ây là book store", Toast.LENGTH_SHORT).show();
+        Fragment current = (Fragment) getCurrentSection().getTargetFragment();
+
+        if (current instanceof HomeFragment
+            || current instanceof FavoritesFragment) {
+            MainActivity.this.finish();
         }
-
-        MainActivity.this.finish();
-
     }
 
 

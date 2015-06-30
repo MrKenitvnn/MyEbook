@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
         Vars.listAllFavorites = bookFavoriteDao.loadAllFavorites();
 
         // set first fragment
-        if (Vars.isInListView) {
+        if (!Vars.isInListView) {
 
             MyUtils.navigationToView((FragmentActivity) getActivity(),
                     new HomeListViewFragment(), R.id.fmBooksContent);

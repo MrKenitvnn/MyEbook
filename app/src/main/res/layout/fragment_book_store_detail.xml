@@ -13,6 +13,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="18sp"
             android:text="Tác giả: " />
 
         <TextView
@@ -20,13 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nguyễn Văn Ý"
-            android:textSize="16sp" />
+            android:textStyle="bold"
+            android:textSize="18sp" />
 
     </LinearLayout>
 
     <Button
         android:id="@+id/btnDownload"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@color/color_accent"

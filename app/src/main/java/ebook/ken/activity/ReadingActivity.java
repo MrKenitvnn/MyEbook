@@ -56,7 +56,7 @@ public class ReadingActivity extends Activity {
 
 		bookDAO 	= new BookOfflineDao(getApplicationContext());
 		bookmarkDAO = new BookmarkDao(getApplicationContext());
-		chapterDao = new ChapterDao(getApplicationContext());
+		chapterDao  = new ChapterDao(getApplicationContext());
 
 		// init controls
 		webview			= (WebView) findViewById(R.id.webkit);
@@ -118,7 +118,7 @@ public class ReadingActivity extends Activity {
 
 	// end-event
 	
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 	
 	private class ReadTask extends AsyncTask<String, Long, Void> {
 		private final ProgressDialog dialog = new ProgressDialog(
@@ -134,7 +134,7 @@ public class ReadingActivity extends Activity {
 		// automatically done on worker thread (separate from UI thread)
 		protected Void doInBackground(final String... args) {
 			try {
-				// Nhận dữ liệu truyền sang
+				// get data
 				BookOffline book = (BookOffline) getIntent().getExtras().getSerializable("BOOK");
 				book_id = Integer.parseInt(book.getBookFolder());
 
@@ -271,21 +271,24 @@ public class ReadingActivity extends Activity {
 		// load sách vào webview
 		@SuppressWarnings("deprecation")
 		protected void onPostExecute(final Void unused) {
-			webview.getSettings().setJavaScriptEnabled(true);
-//			webview.getSettings().setAllowFileAccessFromFileURLs(true);
-			webview.setWebViewClient(new WebViewClient());
-			webview.setWebChromeClient(new WebChromeClient());
-			webview.addJavascriptInterface(this, "android");
-			webview.requestFocusFromTouch();
-			// these settings speed up page load into the webview
-			webview.getSettings().setRenderPriority(RenderPriority.HIGH);
-			webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-			webview.requestFocus(View.FOCUS_DOWN);
+			try {
+				webview.getSettings().setJavaScriptEnabled(true);
+				webview.setWebViewClient(new WebViewClient());
+				webview.setWebChromeClient(new WebChromeClient());
+				webview.addJavascriptInterface(this, "android");
+				webview.requestFocusFromTouch();
+				// these settings speed up page load into the webview
+				webview.getSettings().setRenderPriority(RenderPriority.HIGH);
+				webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+				webview.requestFocus(View.FOCUS_DOWN);
 
-			webview.loadUrl("file://" + FileHandler.ROOT_PATH
-					+ FileHandler.DATA_FOLDER + "/index.html");
-			if (this.dialog.isShowing()) {
-				this.dialog.dismiss();
+				webview.loadUrl("file://" + FileHandler.ROOT_PATH
+						+ FileHandler.DATA_FOLDER + "/index.html");
+				if (this.dialog.isShowing()) {
+					this.dialog.dismiss();
+				}
+			} catch (Exception ex) {
+				Log.d(">>> ken <<<", Log.getStackTraceString(ex));
 			}
 		}
 	}// end-asynctask ReadTask
