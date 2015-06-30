@@ -35,10 +35,10 @@ public class MainActivity extends MaterialNavigationDrawer {
             this.setDrawerHeaderImage(R.drawable.mat3);
 
             // set section
-            this.addSection(newSection("Home", R.drawable.ic_action_back_white, new HomeFragment()));
-            this.addSection(newSection("Favorites", R.drawable.ic_action_back_white, new FavoritesFragment()));
-            this.addSection(newSection("Book Store", R.drawable.ic_action_back_white, new BookStoreFragment()));
-            this.addSection(newSection("Group", R.drawable.ic_action_back_white, new InfoFragment()));
+            this.addSection(newSection("Home", R.drawable.ic_home, new HomeFragment()));
+            this.addSection(newSection("Favorites", R.drawable.ic_communities, new FavoritesFragment()));
+            this.addSection(newSection("Book Store", R.drawable.ic_pages, new BookStoreFragment()));
+            this.addSection(newSection("Group", R.drawable.ic_whats_hot, new InfoFragment()));
 
             // get shared preferences for create app folder
             prefs = getSharedPreferences("ebook.ken.activity", MODE_PRIVATE);
