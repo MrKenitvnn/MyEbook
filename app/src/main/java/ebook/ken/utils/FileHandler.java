@@ -45,7 +45,7 @@ public class FileHandler {
 	public static void createRootFolder() {
 		try {
 			if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-				Log.d(">>> ken <<<", "No SDCARD");
+				MZLog.i("No SDCARD");
 			} else {
 
 				// root's app's folder
@@ -70,7 +70,7 @@ public class FileHandler {
 				epubs.mkdir();
 			}// end-if
 		} catch ( Exception ex){
-			Log.d( ">>> ken <<<", Log.getStackTraceString(ex) );
+			MZLog.d(Log.getStackTraceString(ex) );
 		}
 	}// end-func createRootFolder
 
@@ -83,7 +83,7 @@ public class FileHandler {
 			File aBook = new File(EPUB_PATH + _bookFolderName);
 			aBook.mkdirs();
 		} catch ( Exception ex){
-			Log.d( ">>> ken <<<", Log.getStackTraceString(ex) );
+			MZLog.d(Log.getStackTraceString(ex) );
 			return  null;
 		}
 		return EPUB_PATH + _bookFolderName + File.separator;
@@ -214,7 +214,7 @@ public class FileHandler {
 					is.close();
 				}
 			} catch (IOException ioe) {
-				ioe.printStackTrace();
+				MZLog.d(Log.getStackTraceString(ioe));
 			}
 		}
 		zipFile.close();

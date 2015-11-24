@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import ebook.ken.objects.BookOffline;
+import ebook.ken.utils.MZLog;
 
 
 public class BookOfflineDao {
@@ -56,8 +57,8 @@ public class BookOfflineDao {
 			result = db.delete(Database.TABLE_EPUB_BOOK, Database.epubBook_id
 					+ "=" + id, null);
 		} catch (Exception ex){
-			Log.d(">>> ken <<<", Log.getStackTraceString(ex));
-		}finally {
+			MZLog.d(Log.getStackTraceString(ex));
+		} finally {
 			db.close();
 		}
 		return result;
@@ -102,7 +103,7 @@ public class BookOfflineDao {
 				c.moveToNext();
 			}
 		} catch (Exception ex){
-			Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+			MZLog.d(Log.getStackTraceString(ex));
 		} finally {
 			c.close();
 			db.close();
@@ -128,7 +129,7 @@ public class BookOfflineDao {
 				return true;
 			}
 		} catch (Exception ex){
-			Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+			MZLog.d(Log.getStackTraceString(ex));
 			return false;
 		} finally {
 			c.close();
@@ -212,11 +213,5 @@ public class BookOfflineDao {
 		}
 
 		return id;
-
 	}// end-func getLastId
-
-
-	////////////////////////////////////////////////////////////////////////////////
-
-
 }

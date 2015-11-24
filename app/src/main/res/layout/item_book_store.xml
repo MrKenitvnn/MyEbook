@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/item_listview_selector"
-    android:padding="5dp" >
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/ivCoverBookStore"
@@ -18,21 +18,53 @@
         android:id="@+id/tvNameBookStore"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Name"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:layout_alignTop="@+id/ivCoverBookStore"
+        android:layout_toEndOf="@+id/ivCoverBookStore"
         android:layout_toRightOf="@+id/ivCoverBookStore"
-        android:layout_toEndOf="@+id/ivCoverBookStore" />
+        android:text="Name"
+        android:textColor="#000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvAuthorBookOnline"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="Author"
         android:layout_below="@+id/tvNameBookStore"
+        android:layout_toEndOf="@+id/ivCoverBookStore"
         android:layout_toRightOf="@+id/ivCoverBookStore"
-        android:layout_toEndOf="@+id/ivCoverBookStore" />
+        android:text="Author"
+        android:textColor="#151515"
+        android:textSize="14sp" />
+
+
+    <TextView
+        android:id="@+id/tvDownloadText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ivCoverBookStore"
+        android:layout_alignEnd="@+id/tvAuthorBookOnline"
+        android:layout_alignRight="@+id/tvAuthorBookOnline"
+        android:text=" downloads"
+        android:textColor="#151515" />
+
+    <TextView
+        android:id="@+id/tvDownloadTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvDownloadText"
+        android:layout_toLeftOf="@+id/tvDownloadText"
+        android:layout_toStartOf="@+id/tvDownloadText"
+        android:textColor="#151515" />
+
+    <TextView
+        android:id="@+id/tvRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvDownloadText"
+        android:layout_alignParentRight="true"
+        android:text="4.5"
+        android:textSize="13sp"
+        android:textColor="#eaff9d00" />
 
 </RelativeLayout>

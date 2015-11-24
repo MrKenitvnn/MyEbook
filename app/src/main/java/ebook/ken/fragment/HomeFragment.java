@@ -8,17 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import java.util.List;
+import com.melnykov.fab.FloatingActionButton;
 
 import ebook.ken.activity.R;
-import ebook.ken.adapter.FragmentHomeListViewAdapter;
 import ebook.ken.dao.BookFavoriteDao;
-import ebook.ken.dao.BookOfflineDao;
-import ebook.ken.objects.BookOffline;
+import ebook.ken.utils.MZLog;
 import ebook.ken.utils.MyUtils;
-import ebook.ken.utils.Vars;
+import ebook.ken.utils.MyApp;
 
 /**
  * Created by admin on 5/26/2015.
@@ -26,11 +23,9 @@ import ebook.ken.utils.Vars;
 public class HomeFragment extends Fragment {
 
     private View view;
-    private ImageView ivChangeStyle;
+    private FloatingActionButton ivChangeStyle;
 
     public static BookFavoriteDao bookFavoriteDao;
-
-
 
     ////////////////////////////////////////////////////////////////////////////////
     // Todo fragment life cycle
@@ -41,7 +36,7 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // init controls
-        ivChangeStyle = (ImageView) view.findViewById(R.id.ivChangeStyle);
+        ivChangeStyle = (FloatingActionButton) view.findViewById(R.id.ivChangeStyle);
 
         // events
         ivChangeStyle.setOnClickListener(ivChangeStyleEvent);
@@ -58,25 +53,18 @@ public class HomeFragment extends Fragment {
         super.onStart();
 
         // load list favorites
-        Vars.listAllFavorites = bookFavoriteDao.loadAllFavorites();
+        MyApp.listAllFavorites = bookFavoriteDao.loadAllFavorites();
 
         // set first fragment
-        if (!Vars.isInListView) {
-
+        if (MyApp.isInListView) {
             MyUtils.navigationToView((FragmentActivity) getActivity(),
-                    new HomeListViewFragment(), R.id.fmBooksContent);
-            // change image of imageview
-            MyUtils.setImageIsGridView(getActivity(), ivChangeStyle);
+                    new HomeCardListFragment(), R.id.fmHomeContent);
         } else {
-
             MyUtils.navigationToView((FragmentActivity) getActivity(),
-                    new HomeGridViewFragment(), R.id.fmBooksContent);
-            // change image of imageview
-            MyUtils.setImageIsListView(getActivity(), ivChangeStyle);
-        }// end-if
+                    new HomeCardGridFragment(), R.id.fmHomeContent);
+        }
 
     }// end-func onStart
-
 
     @Override
     public void onResume() {
@@ -84,49 +72,31 @@ public class HomeFragment extends Fragment {
 
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // Todo events
-
+    /**
+     * TODO events
+     */
     OnClickListener ivChangeStyleEvent = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            try{
-                if(Vars.isInListView){ // if in listview and wanna to gridview
-
-                    Vars.isInListView = false;
+            try {
+                if (MyApp.isInListView) { // if in listview and wanna to gridview
+                    MyApp.isInListView = false;
                     // replace fragment of books
-                    MyUtils.navigationToView( (FragmentActivity) getActivity(),
-                            new HomeGridViewFragment(),
-                            R.id.fmBooksContent);
-
-                    // change image of imageview
-                    MyUtils.setImageIsListView(getActivity(), ivChangeStyle);
-
+                    MyUtils.navigationToView((FragmentActivity) getActivity(),
+                            new HomeCardGridFragment(),
+                            R.id.fmHomeContent);
                 } else { // if in gridview and wanna to listview
-
-                    Vars.isInListView = true;
-
+                    MyApp.isInListView = true;
                     // replace fragment of books
-                    MyUtils.navigationToView( (FragmentActivity) getActivity(),
-                            new HomeListViewFragment(),
-                            R.id.fmBooksContent);
-
-                    // change image of imageview
-                    MyUtils.setImageIsGridView(getActivity(), ivChangeStyle);
-
+                    MyUtils.navigationToView((FragmentActivity) getActivity(),
+                            new HomeCardListFragment(),
+                            R.id.fmHomeContent);
                 }// end-if
-            } catch(Exception ex){
-                Log.d(">>> ken <<<", ex.getMessage());
-                Vars.isInListView = true;
+            } catch (Exception ex) {
+                MZLog.d(Log.getStackTraceString(ex));
+                MyApp.isInListView = true;
             }
         }
     };//end-event ivChangeStyleEvent
-
-
-
-
-
-
 
 }

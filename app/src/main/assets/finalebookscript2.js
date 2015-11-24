@@ -1,5 +1,4 @@
-	  
-	  
+
 	  reader.addControl(placeSaver, 'invisible');
 
 	  /* SPINNER */
@@ -25,7 +24,7 @@
 	  //stencil.toggleHighlights();
 
 	  /* BOOK TITLE RUNNING HEAD */
-	  var bookTitle = {}
+	  var bookTitle = {};
 	  bookTitle.contentsMenu = Monocle.Controls.Contents(reader);
 	  reader.addControl(bookTitle.contentsMenu, 'popover', { hidden: true });
 	  bookTitle.createControlElements = function () {
@@ -75,7 +74,7 @@
 			this.runners[page.m.pageIndex].innerHTML = place.chapterTitle();
 		  }
 		}
-	  }
+	  };
 	  reader.addControl(chapterTitle, 'page');
 	  reader.listen(
 		'monocle:pagechange',
@@ -101,7 +100,7 @@
 			this.runners[page.m.pageIndex].innerHTML = pageNumber;
 		  }
 		}
-	  }
+	  };
 	  reader.addControl(pageNumber, 'page');
 	  reader.listen(
 		'monocle:pagechange',
@@ -117,7 +116,7 @@
 		evt.stopPropagation();
 		reader.showControl(scrubber);
 		scrubber.updateNeedles();
-	  }
+	  };
 	  for (var i = 0; i < chapterTitle.runners.length; ++i) {
 		Monocle.Events.listenForContact(
 		  chapterTitle.runners[i].parentNode,
@@ -128,8 +127,10 @@
 		  { start: showFn }
 		);
 	  }	  
-	}); //end- window.reader	
-});	
+	}); //end- window.reader
+
+});
+
 function getComponentId(){
 	android.setData(reader.getPlace().componentId(),reader.getPlace().percentageThrough());
 }

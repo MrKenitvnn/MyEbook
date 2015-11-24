@@ -72,19 +72,12 @@ public class MyUtils {
 		try {
 			bitmap = BitmapFactory.decodeStream((InputStream)new URL(url).getContent());
 		} catch (MalformedURLException e) {
-			Log.d(">>> ken <<<", e.getMessage());
+			MZLog.d(Log.getStackTraceString(e));
 		} catch (IOException e) {
-			Log.d(">>> ken <<<", e.getMessage());
+			MZLog.d(Log.getStackTraceString(e));
 		}
 		return bitmap;
 		
 	}// end-func download_Image
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO 
-	
-	
-	
 
 }

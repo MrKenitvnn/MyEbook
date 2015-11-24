@@ -14,8 +14,9 @@ import android.widget.ImageView;
 
 import ebook.ken.activity.R;
 import ebook.ken.dao.BookFavoriteDao;
+import ebook.ken.utils.MZLog;
 import ebook.ken.utils.MyUtils;
-import ebook.ken.utils.Vars;
+import ebook.ken.utils.MyApp;
 
 /**
  * Created by admin on 5/26/2015.
@@ -42,7 +43,7 @@ public class FavoritesFragment extends Fragment {
         bookFavoriteDao = new BookFavoriteDao(getActivity());
 
         // set list book favorites
-        Vars.listAllBookFavorites = bookFavoriteDao.loadAllBookOfFavorites();
+        MyApp.listAllBookFavorites = bookFavoriteDao.loadAllBookOfFavorites();
 
         // events
         ivChangeStyle.setOnClickListener(ivChangeStyleEvent);
@@ -59,18 +60,14 @@ public class FavoritesFragment extends Fragment {
         super.onStart();
 
         // set first fragment
-        if (!Vars.isInListView) {
+        if (MyApp.isInListView) {
 
             MyUtils.navigationToView((FragmentActivity) getActivity(),
-                    new FavoritesListViewFragment(), R.id.fmBooksContent);
-            // change image of imageview
-            MyUtils.setImageIsGridView(getActivity(), ivChangeStyle);
+                    new FavoritesListViewFragment(), R.id.fmFavoriteContent);
         } else {
 
             MyUtils.navigationToView((FragmentActivity) getActivity(),
-                    new FavoritesGridViewFragment(), R.id.fmBooksContent);
-            // change image of imageview
-            MyUtils.setImageIsListView(getActivity(), ivChangeStyle);
+                    new FavoritesGridViewFragment(), R.id.fmFavoriteContent);
         }// end-if
 
     }// end-func onStart
@@ -83,33 +80,27 @@ public class FavoritesFragment extends Fragment {
         @Override
         public void onClick(View v) {
             try{
-                if(Vars.isInListView){ // if in listview and wanna to gridview
+                if(MyApp.isInListView){ // if in listview and wanna to gridview
 
-                    Vars.isInListView = false;
+                    MyApp.isInListView = false;
                     // replace fragment of books
                     MyUtils.navigationToView( (FragmentActivity) getActivity(),
                                               new FavoritesGridViewFragment(),
-                                              R.id.fmBooksContent);
-
-                    // change image of imageview
-                    MyUtils.setImageIsListView(getActivity(), ivChangeStyle);
+                                              R.id.fmFavoriteContent);
 
                 } else { // if in gridview and wanna to listview
 
-                    Vars.isInListView = true;
+                    MyApp.isInListView = true;
 
                     // replace fragment of books
                     MyUtils.navigationToView( (FragmentActivity) getActivity(),
                                               new  FavoritesListViewFragment(),
-                                              R.id.fmBooksContent);
-
-                    // change image of imageview
-                    MyUtils.setImageIsGridView(getActivity(), ivChangeStyle);
+                                              R.id.fmFavoriteContent);
 
                 }// end-if
             } catch(Exception ex){
-                Log.d(">>> ken <<<", Log.getStackTraceString(ex));
-                Vars.isInListView = true;
+                MZLog.d(Log.getStackTraceString(ex));
+                MyApp.isInListView = true;
             }
         }
     };//end-event ivChangeStyleEvent

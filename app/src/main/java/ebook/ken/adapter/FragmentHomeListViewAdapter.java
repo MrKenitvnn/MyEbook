@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
@@ -24,8 +22,8 @@ import ebook.ken.activity.R;
 import ebook.ken.fragment.HomeFragment;
 import ebook.ken.myui.imageloader.ImageLoader;
 import ebook.ken.objects.BookOffline;
-import ebook.ken.utils.JsonHandler;
-import ebook.ken.utils.Vars;
+import ebook.ken.utils.MZLog;
+import ebook.ken.utils.MyApp;
 import nl.siegmann.epublib.domain.Book;
 
 public class FragmentHomeListViewAdapter extends BaseAdapter {
@@ -140,16 +138,15 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 				viewHolder.imageView.setImageDrawable(myDrawable);
 			}// end-if
 
-			Log.d(">>> ken <<<", locationModel.getBookCoverPath());
-
+			MZLog.d(locationModel.getBookCoverPath());
 		} catch (Exception ex) {
-			Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+			MZLog.d(Log.getStackTraceString(ex));
 		}
 
 
 		// with any book, loop though items of list favorites to show checkbox
-		for (int i = 0; i < Vars.listAllFavorites.size(); i++) {
-			if( locationModel.getBookId() == Vars.listAllFavorites.get(i).getBookOfflineId() ){
+		for (int i = 0; i < MyApp.listAllFavorites.size(); i++) {
+			if( locationModel.getBookId() == MyApp.listAllFavorites.get(i).getBookOfflineId() ){
 				viewHolder.cbFavorite.setChecked(true);
 			}// end-if
 		}// end-for
@@ -159,10 +156,10 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				if( viewHolder.cbFavorite.isChecked() ){
 					HomeFragment.bookFavoriteDao.addBookFavorite( locationModel.getBookId() );
-					Vars.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
+					MyApp.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
 				} else {
 					HomeFragment.bookFavoriteDao.delBookFavorite(locationModel.getBookId());
-					Vars.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
+					MyApp.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
 				}// end-if
 			}// end-func
 		});
@@ -171,10 +168,9 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 	}// end-func getView
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO function inner
-
-	// event add a book
+	/**
+	 * TODO event add a book
+	 */
 	public void eventAddNewBook(BookOffline wp) {
 		if (wp != null) {
 			mLocations.add(wp);
@@ -182,16 +178,17 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		}
 	}
 
-	// event del a book
+	/**
+	 * TODO event del a book
+	 */
 	public void eventDelABook(int id) {
 		mLocations.remove(id);
 		notifyDataSetChanged();
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	
-	// lọc khi nhập ký tự trên searchview
+	/**
+	 * TODO lọc khi nhập ký tự trên searchview
+ 	 */
 	public void filter(String charText) {
 		charText	= charText.toLowerCase(Locale.getDefault());
 		mLocations	.clear();
@@ -213,10 +210,9 @@ public class FragmentHomeListViewAdapter extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO class inner
-
+	/**
+	 * TODO class inner
+	 */
 	private static class ViewHolder {
 		private ImageView imageView;	// hiển thị cover
 		private TextView

@@ -13,12 +13,11 @@ import android.widget.ListView;
 
 import ebook.ken.adapter.SectionAdapter;
 import ebook.ken.objects.SectionOnline;
-import ebook.ken.utils.Vars;
+import ebook.ken.utils.MyApp;
 
 
 public class SectionActivity extends Activity{
-	
-	// define something
+
 	public static final int 
 						REQUEST_CODE = 0x1,
 						RESULT_OK = 0x0,
@@ -27,19 +26,17 @@ public class SectionActivity extends Activity{
 	public static final String
 						RESULT = "section_id";	
 
-	// intent for return main activity
-	Intent returnIntent;
+	Intent returnIntent; // intent for return main activity
 	
 	// controls
 	private Button btnCloseSection;
 	private ListView lvSection;
-	
-	// variable in activity
-	SectionAdapter adapter;
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO activity life cycle
+
+	SectionAdapter adapter; // variable in activity
+
+	/**
+	 * TODO: activity life cycle
+	 **/
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,26 +60,24 @@ public class SectionActivity extends Activity{
 
 		super.onResume();
 		// set data for listView section
-		if(Vars.listSection != null){
-			adapter = new SectionAdapter(this, Vars.listSection);
+		if(MyApp.listSection != null){
+			adapter = new SectionAdapter(this, MyApp.listSection);
 			lvSection.setAdapter(adapter);
 		}
 
 	}// end-func onResume
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO events
+	/**
+	 * TODO: Event
+	 */
 
 	OnClickListener setOnClickListenerEvent = new OnClickListener() {
-		
 		@Override
 		public void onClick(View v) {
-
 			returnIntent = new Intent();
 			setResult(RESULT_CANCELED, returnIntent);
 			finish();
-
 		}
 	};// end-func setOnClickListenerEvent
 	
@@ -104,10 +99,5 @@ public class SectionActivity extends Activity{
 
 		}
 	};// end-event lvSectionItemClick
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO 
-	
 	
 }

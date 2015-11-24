@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="Book Name"
+            android:textColor="#151515"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -37,6 +38,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="EpubBook Author"
+            android:textColor="#151515"
             android:textSize="14sp" />
     </LinearLayout>
 

@@ -3,15 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gvHome"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginBottom="48dp"
-        android:background="#FFF"
-        android:horizontalSpacing="10dp"
-        android:numColumns="2"
-        android:padding="5dp"
-        android:verticalSpacing="10dp" />
-
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cardGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

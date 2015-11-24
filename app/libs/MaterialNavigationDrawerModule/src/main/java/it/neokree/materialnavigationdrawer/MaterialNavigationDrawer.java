@@ -20,7 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -59,13 +59,11 @@ import it.neokree.materialnavigationdrawer.util.TypefaceManager;
 import it.neokree.materialnavigationdrawer.util.Utils;
 
 /**
- * Activity that extends ActionBarActivity with a Navigation Drawer with Material Design style
+ * Activity that extends AppCompatActivity with a Navigation Drawer with Material Design style
  *
  * @author created by neokree
  */
-@SuppressWarnings("unused")
-@SuppressLint("InflateParams")
-public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivity implements MaterialSectionListener,MaterialAccount.OnAccountDataLoaded {
+public abstract class MaterialNavigationDrawer<Fragment> extends AppCompatActivity implements MaterialSectionListener,MaterialAccount.OnAccountDataLoaded {
 
     //    public static final int BOTTOM_SECTION_START = 10000;
     private static final int USER_CHANGE_TRANSITION = 500;
@@ -465,7 +463,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
         density = resources.getDisplayMetrics().density;
 
         // set the right drawer width
-        DrawerLayout.LayoutParams drawerParams = (DrawerLayout.LayoutParams) drawer.getLayoutParams();
+        DrawerLayout.LayoutParams drawerParams = (android.support.v4.widget.DrawerLayout.LayoutParams) drawer.getLayoutParams();
         drawerParams.width = Utils.getDrawerWidth(resources);
         drawer.setLayoutParams(drawerParams);
 

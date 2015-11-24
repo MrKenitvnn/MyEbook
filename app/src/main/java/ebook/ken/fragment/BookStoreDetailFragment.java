@@ -2,8 +2,10 @@ package ebook.ken.fragment;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,13 +16,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -32,9 +40,9 @@ import ebook.ken.objects.BookOnline;
 import ebook.ken.utils.BookOfflineHandler;
 import ebook.ken.utils.FileHandler;
 import ebook.ken.utils.JsonHandler;
-import ebook.ken.utils.Vars;
+import ebook.ken.utils.MZLog;
+import ebook.ken.utils.MyApp;
 
-;
 
 /**
  * Created by admin on 5/26/2015.
@@ -45,31 +53,35 @@ public class BookStoreDetailFragment extends Fragment {
     private View view;
     private Button btnDownload;
     private TextView tvAuthorStoreDetail, tvDescription;
+    private RatingBar ratingBar;
 
     private BookOfflineDao bookOfflineDao;
     private ChapterDao chapterDao;
+    private SharedPreferences sharedPreferences;
+    private BookOnline itemBook;
 
-
-
-    ///////////////////////////////////////////////////////////////////////////////////
-    //TODO fragment life cycle
-
+    /**
+     * fragment life cycle
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_book_store_detail, container, false);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         // init controls
-        btnDownload         = (Button) view.findViewById(R.id.btnDownload);
+        ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+        btnDownload = (Button) view.findViewById(R.id.btnDownload);
+        tvDescription = (TextView) view.findViewById(R.id.tvDescription);
         tvAuthorStoreDetail = (TextView) view.findViewById(R.id.tvAuthorStoreDetail);
-        tvDescription       = (TextView) view.findViewById(R.id.tvDescription);
 
         // set text
-        tvAuthorStoreDetail.setText(Vars.currentBookDetail.getBookAuthor());
-        tvDescription.setText(Vars.currentBookDetail.getBookDesciption());
+        tvAuthorStoreDetail.setText(MyApp.currentBookDetail.getBookAuthor());
+        tvDescription.setText(MyApp.currentBookDetail.getBookDesciption());
 
         // events
         btnDownload.setOnClickListener(btnDownloadEvent);
+        ratingBar.setOnRatingBarChangeListener(onRating);
 
         // enable options menu
         setHasOptionsMenu(true);
@@ -78,13 +90,15 @@ public class BookStoreDetailFragment extends Fragment {
         bookOfflineDao = new BookOfflineDao(getActivity());
         chapterDao = new ChapterDao(getActivity());
 
+        itemBook = MyApp.currentBookDetail;
+
         return view;
     }
 
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // TODO events
-
+    /**
+     * events
+     */
     OnClickListener btnDownloadEvent = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -92,10 +106,22 @@ public class BookStoreDetailFragment extends Fragment {
         }
     };
 
+    OnRatingBarChangeListener onRating = new OnRatingBarChangeListener() {
+        @Override
+        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+            // send rate value to server
+            int user_id = sharedPreferences.getInt("user_id", 0);
+            if (user_id != 0) {
+                new AsyncRating().execute(String.valueOf(itemBook.getBookId()), String.valueOf(user_id), String.valueOf(rating));
+            } else {
+                Toast.makeText(getActivity(), "Server Error!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    //TODO option menu
-
+    /**
+     * option menu
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
@@ -105,11 +131,9 @@ public class BookStoreDetailFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-
-    ///////////////////////////////////////////////////////////////////////////////////
-    // TODO async task
-
-    // Progress Dialog
+    /**
+     * async task
+     */
     private ProgressDialog pDialog;
 
     // Progress dialog type (0 - for Horizontal progress bar)
@@ -117,7 +141,7 @@ public class BookStoreDetailFragment extends Fragment {
 
     /**
      * Showing Dialog
-     * */
+     */
     protected Dialog showDialog(int id) {
         switch (id) {
             case progress_bar_type: // we set this to 0
@@ -134,7 +158,7 @@ public class BookStoreDetailFragment extends Fragment {
         }
     }
 
-    protected void dismissDialog(int id){
+    protected void dismissDialog(int id) {
         switch (id) {
             case progress_bar_type:
                 pDialog.dismiss();
@@ -143,7 +167,12 @@ public class BookStoreDetailFragment extends Fragment {
     }
 
 
-    class AsyncDownLoadBook extends AsyncTask<Void, String, Boolean>{
+    /**
+     * Asyntask for download book
+     */
+    class AsyncDownLoadBook extends AsyncTask<Void, String, Boolean> {
+
+        BookOffline bookOffline = new BookOffline();
 
         @Override
         protected void onPreExecute() {
@@ -154,13 +183,12 @@ public class BookStoreDetailFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            BookOnline itemBook = Vars.currentBookDetail;
             String epubPath = itemBook.getBookFilePath();
 
             // download file
-            try{
+            try {
                 // check book is exists
-                if( bookOfflineDao.checkBookOfflineByIdOnline(itemBook.getBookId()) ){
+                if (bookOfflineDao.checkBookOfflineByIdOnline(itemBook.getBookId())) {
                     return false;
                 }
 
@@ -206,13 +234,11 @@ public class BookStoreDetailFragment extends Fragment {
                     String opfFilePath = "";
                     String coverFilePath = "";
 
-//                    BookOnline itemBook = Vars.currentBookDetail;
-                    BookOffline bookOffline = new BookOffline();
 
                     // step 1: create folder of book
-                    String bookFolder       = String.valueOf(bookOfflineDao.getLastId());
-                    String bookFolderPath   = FileHandler.createBookFolder(bookFolder);
-                    String pathExtract      = FileHandler.ROOT_PATH + itemBook.getBookFilePath();
+                    String bookFolder = String.valueOf(bookOfflineDao.getLastId());
+                    String bookFolderPath = FileHandler.createBookFolder(bookFolder);
+                    String pathExtract = FileHandler.ROOT_PATH + itemBook.getBookFilePath();
 
                     // step 2: extract file
                     FileHandler.doUnzip(FileHandler.ROOT_PATH + itemBook.getBookFilePath(), bookFolderPath);
@@ -221,20 +247,20 @@ public class BookStoreDetailFragment extends Fragment {
                     FileHandler.deleteFileFromSdcard(pathExtract);
 
                     // step 4: find ncx, opf, cover path
-                    ncxFilePath   = FileHandler.getNcxFilePath(FileHandler.EPUB_PATH + bookFolder);
-                    opfFilePath   = FileHandler.getContentFilePath(FileHandler.EPUB_PATH + bookFolder);
+                    ncxFilePath = FileHandler.getNcxFilePath(FileHandler.EPUB_PATH + bookFolder);
+                    opfFilePath = FileHandler.getContentFilePath(FileHandler.EPUB_PATH + bookFolder);
                     coverFilePath = FileHandler.getCoverFilePath(FileHandler.EPUB_PATH + bookFolder);
 
                     // step 5: write data to database
                     bookOffline.setBookIdOnline(itemBook.getBookId())
-                                .setBookFilePath(itemBook.getBookFilePath())
-                                .setBookAuthor(itemBook.getBookAuthor())
-                                .setBookName(itemBook.getBookName());
-                    bookOffline .setBookFolder(bookFolder)
-                                .setBookFolderPath(bookFolderPath)
-                                .setBookNcxPath(ncxFilePath)
-                                .setBookOpfPath(opfFilePath)
-                                .setBookCoverPath(coverFilePath);
+                            .setBookFilePath(itemBook.getBookFilePath())
+                            .setBookAuthor(itemBook.getBookAuthor())
+                            .setBookName(itemBook.getBookName());
+                    bookOffline.setBookFolder(bookFolder)
+                            .setBookFolderPath(bookFolderPath)
+                            .setBookNcxPath(ncxFilePath)
+                            .setBookOpfPath(opfFilePath)
+                            .setBookCoverPath(coverFilePath);
 
                     bookOfflineDao.addBookOffline(bookOffline);
                     //  ghi chapter
@@ -242,11 +268,10 @@ public class BookStoreDetailFragment extends Fragment {
                             .listEpubChapterData(bookOffline));
 
                 } catch (Exception ex) {
-                    Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+                    MZLog.d( Log.getStackTraceString(ex));
                 }
-
-            } catch (Exception ex){
-                Log.d(">>> ken <<<", Log.getStackTraceString(ex));
+            } catch (Exception ex) {
+                MZLog.d(Log.getStackTraceString(ex));
                 return false;
             }
 
@@ -265,20 +290,115 @@ public class BookStoreDetailFragment extends Fragment {
             // dismiss the dialog after the file was downloaded
             dismissDialog(progress_bar_type);
 
-            if( result ){
-                Toast.makeText(getActivity(), "Tải thành công: " + Vars.currentBookDetail.getBookName(), Toast.LENGTH_SHORT).show();
+            if (result) {
+                Toast.makeText(getActivity(), "Tải thành công: " + MyApp.currentBookDetail.getBookName(), Toast.LENGTH_SHORT).show();
 
+                // TODO note: put to update download total's book plus = 1
+                new AsyncPlusDownload().execute(bookOffline);
             } else {
-                Toast.makeText( getActivity(), "Cuốn sách này đã có!", Toast.LENGTH_SHORT ).show();
+                Toast.makeText(getActivity(), "Cuốn sách này đã có!", Toast.LENGTH_SHORT).show();
             }
-
         }
     }// end-async AsyncDownLoadBook
 
 
+    /**
+     * Asynctask for plus value download
+     */
+    class AsyncPlusDownload extends AsyncTask<BookOffline, Void, Void> {
+
+        @Override
+        protected Void doInBackground(BookOffline... params) {
+            try {
+                sendAddPlusDownload(params[0].getBookIdOnline());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private void sendAddPlusDownload(int book_id) throws Exception {
+
+        String url = "http://mrkenitvnn.esy.es/api/includes/add_download.php";
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        //add reuqest header
+        con.setRequestMethod("POST");
+        /*con.setRequestProperty("User-Agent", USER_AGENT);*/
+        /*con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");*/
+
+        String urlParameters = "book_id=" + book_id;
+
+        // Send post request
+        con.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(urlParameters);
+        wr.flush();
+        wr.close();
+    }
 
 
+    /**
+     * send rate
+     */
+    class AsyncRating extends AsyncTask<String, Void, Void> {
 
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                sendRating(Integer.parseInt(params[0]), Integer.parseInt(params[1]), params[2]);
+            } catch (Exception e) {
+                MZLog.d(e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Toast.makeText(MyApp.getAppContext(), "Thank you for your rating!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * @param book_id
+     * @param user_id
+     * @param rate
+     * @throws Exception
+     */
+    private void sendRating(int book_id, int user_id, String rate) throws Exception {
+
+        String url = "http://mrkenitvnn.esy.es/api/includes/add_rate.php";
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        //add reuqest header
+        con.setRequestMethod("POST");
+        /*con.setRequestProperty("User-Agent", USER_AGENT);*/
+        /*con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");*/
+
+        String urlParameters = "book_id=" + book_id + "&user_id=" + user_id + "&rate=" + rate;
+
+        // Send post request
+        con.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(urlParameters);
+        wr.flush();
+        wr.close();
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        MZLog.d("rate-response: " + response.toString());
+    }
 
 
 }

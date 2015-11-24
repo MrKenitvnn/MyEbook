@@ -1,13 +1,22 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "22.0.0"
     compileOptions.encoding = 'UTF-8' // write your encoding here
 
     defaultConfig {
         applicationId "activity.ken.ebook.myebookepub"
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -19,16 +28,31 @@ android {
         }
     }
 }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v4:22.0.0'
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'it.neokree:MaterialNavigationDrawer:1.3.3'
+
+    //gcm
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
+
+    // volley
+    compile 'com.mcxiaoke.volley:library:1.0.+'
+    
+    // design
+    compile project(':MaterialNavigationDrawerModule')
+
+    compile'com.android.support:design:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.facebook.android:facebook-android-sdk:3.20.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.melnykov:floatingactionbutton:1.3.0'
     compile 'com.navercorp.pulltorefresh:library:3.2.0@aar'
-    //    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'org.slf4j:slf4j-android:1.7.12'
-    //    compile files('libs/epublib.jar')
-    compile files('libs/htmlcleaner-2.12.jar')
-    compile files('libs/jsoup-1.8.2.jar')
+    compile 'it.neokree:MaterialTabs:0.11'
+    //    compile 'org.slf4j:slf4j-android:1.7.12'
+
 }

@@ -94,16 +94,12 @@ public class BookOfflineHandler {
                                             .setChapterTitle(chapterTitle)
                                             .setChapterSrc(chapterSrc)
                                             .setChapterPath(chapterPath));
-
-                Log.d(">>> ken <<<", "chapter : " + chapterTitle);
-
             }// end-for
         } catch (IOException e) {
             e.printStackTrace();
         }// end-try
 
         return lstChapter;
-
     }
 
 

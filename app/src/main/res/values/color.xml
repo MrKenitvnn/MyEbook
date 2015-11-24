@@ -14,7 +14,8 @@
     <!-- color for toolbar-->
     <color name="color_toolbar_light">#29B6F6</color>
     <color name="color_toolbar_dark">#0288D1</color>
-    <color name="color_accent">#009688</color>
+    <color name="color_accent">#2196F3</color>
+    <color name="color_primary">#0288D1</color>
 
 
     <!-- my color -->

@@ -1,6 +1,7 @@
 package ebook.ken.utils;
 
 import android.app.Application;
+import android.content.Context;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import ebook.ken.objects.BookOnline;
 import ebook.ken.objects.SectionOnline;
 
 
-public class Vars extends Application{
+public class MyApp extends Application{
 	
 	// state fragment 
 	public static final int 
@@ -23,9 +24,6 @@ public class Vars extends Application{
 	// check is in section view
 	public static boolean isInSection  = false;
 
-	// check first time open section activity
-
-	
 	// current fragment ViewPager
 	public static int currentPage = BOOKS ;
 	
@@ -42,6 +40,38 @@ public class Vars extends Application{
 
 	public static List<BookOffline> listAllBookFavorites	= null;
 	public static List<BookFavorite> listAllFavorites		= null;
-	
-	
+
+	// gcm
+	public static final String API_KEY = "AIzaSyCPUWdmOmTOMyaSpyVUTR4qAZbxQM19wfU";
+	public static final String SENDER_ID = "634730422854";
+	public static final String PRJ_NAME = "kencentermessage";
+
+	public static final String SERVER_GCM ="";
+	/**
+	 * Tag used on log messages.
+	 */
+	static final String TAG = "GCM Android Example";
+	static final String DISPLAY_MESSAGE_ACTION = "com.androidexample.gcm.DISPLAY_MESSAGE";
+	static final String EXTRA_MESSAGE = "message";
+
+
+    private static MyApp mInstance;
+	public MyApp() {};
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mInstance = this;
+    }
+
+    public static MyApp getInstance () {
+        if (mInstance == null) {
+            mInstance = new MyApp();
+        }
+        return mInstance;
+    }
+
+    public static Context getAppContext () {
+        return getInstance().getApplicationContext();
+    }
 }

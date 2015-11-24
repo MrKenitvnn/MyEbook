@@ -19,7 +19,7 @@ import ebook.ken.utils.JsonHandler;
 public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
 	
 	private ImageView ivCover;
-	private TextView tvNameBookOnline, tvAuthorBookOnline;
+	private TextView tvNameBookOnline, tvAuthorBookOnline, tvDownloadTotal, tvRate;
 	public ImageLoader imageLoader;
 
 
@@ -46,18 +46,21 @@ public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
 			convertView = LayoutInflater.from(getContext()).inflate(
 					R.layout.item_book_store, parent, false);
 		}
-		
+
+		tvRate				= (TextView) convertView.findViewById(R.id.tvRate);
 		ivCover				= (ImageView) convertView.findViewById(R.id.ivCoverBookStore);
 		tvNameBookOnline	= (TextView) convertView.findViewById(R.id.tvNameBookStore);
 		tvAuthorBookOnline	= (TextView) convertView.findViewById(R.id.tvAuthorBookOnline);
-		
-		tvNameBookOnline.setText(itemBook.getBookName());
-		tvAuthorBookOnline.setText(itemBook.getBookAuthor());
-		imageLoader.DisplayImage(JsonHandler.BASE_URL + itemBook.getBookCoverPath(), ivCover);
+		tvDownloadTotal		= (TextView) convertView.findViewById(R.id.tvDownloadTotal);
+
+
+		tvDownloadTotal		.setText(String.valueOf(itemBook.getBookTotalDownload()));
+		tvNameBookOnline	.setText(itemBook.getBookName());
+		tvAuthorBookOnline	.setText(itemBook.getBookAuthor());
+        tvRate              .setText(String.valueOf(itemBook.getBookRate()));
+		imageLoader			.DisplayImage(JsonHandler.BASE_URL + itemBook.getBookCoverPath(), ivCover);
 		
 		return convertView;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	
 }

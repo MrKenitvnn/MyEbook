@@ -2,7 +2,7 @@
 
 
     <!-- Master / Child Example -->
-    <style name="MasterChild" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
+    <style name="MasterChild" parent="MaterialNavigationDrawerTheme.Light">
         <item name="colorPrimary">@color/color_toolbar_light</item>
         <item name="colorPrimaryDark">@color/color_toolbar_dark</item>
         <item name="colorAccent">@color/color_accent</item>

@@ -19,7 +19,8 @@ public class Database extends SQLiteOpenHelper {
 					epubBookFolder			= "epubBookFolder",
 					epubBookFolderPath		= "epubBookFolderPath",
 					epubBookNcxPath			= "epubBookNcxPath",
-					epubBookOpfPath			= "epubBookOpfPath";
+					epubBookOpfPath			= "epubBookOpfPath",
+					epubBookHtmlPath		= "epubBookHtmlPath";
 
 	public static String 
 					TABLE_EPUB_BOOKMARK	= "tblEpubBookmark",
@@ -66,6 +67,8 @@ public class Database extends SQLiteOpenHelper {
 				+ epubBookNcxPath
 				+ " text, "
 				+ epubBookOpfPath
+				+ " text, "
+				+ epubBookHtmlPath
 				+ " text "
 				+ ")";
 		
