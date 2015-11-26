@@ -27,9 +27,9 @@ public class HomeFragment extends Fragment {
 
     public static BookFavoriteDao bookFavoriteDao;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Todo fragment life cycle
-
+    /**
+     * fragment life cycle
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * TODO events
+     * events
      */
     OnClickListener ivChangeStyleEvent = new OnClickListener() {
         @Override
@@ -97,6 +97,6 @@ public class HomeFragment extends Fragment {
                 MyApp.isInListView = true;
             }
         }
-    };//end-event ivChangeStyleEvent
+    };
 
 }

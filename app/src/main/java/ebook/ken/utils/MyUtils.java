@@ -2,6 +2,7 @@ package ebook.ken.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -11,6 +12,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -19,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import ebook.ken.activity.R;
+import ebook.ken.activity.ReadingActivity;
+import ebook.ken.objects.BookOffline;
 
 
 public class MyUtils {

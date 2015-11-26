@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 import ebook.ken.activity.R;
 import ebook.ken.myui.imageloader.ImageLoader;

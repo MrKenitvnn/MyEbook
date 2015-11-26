@@ -13,6 +13,10 @@ import android.widget.GridView;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import ebook.ken.activity.R;
 import ebook.ken.activity.ReadingActivity;
 import ebook.ken.adapter.FragmentFavoritesGridViewAdapter;
@@ -22,70 +26,56 @@ import ebook.ken.utils.MyApp;
 
 public class FavoritesGridViewFragment extends Fragment {
 
-	private View view;
-	private GridView gvFavorites;
+    private View view;
 
-	// list data book offline
-	private List<BookOffline> listData;
+    @Bind(R.id.gvFavorites)
+    GridView gvFavorites;
 
-	// adapter
-	public static FragmentFavoritesGridViewAdapter adapter;
+    private List<BookOffline> listData; // list data book offline
 
+    public static FragmentFavoritesGridViewAdapter adapter;
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO fragment life cycle
+    /**
+     * fragment life cycle
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_favorites_gridview,
+                container, false);
 
-		view = inflater.inflate(R.layout.fragment_favorites_gridview,
-				container, false);
+        ButterKnife.bind(this, view);
 
-		// init controls
-		gvFavorites = (GridView) view.findViewById(R.id.gvFavorites);
+        return view;
+    }
 
-		// events
-		gvFavorites.setOnItemClickListener(gvFavoritesEvent);
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            //get all book
+            listData = MyApp.listAllBookFavorites;
 
-		return view;
+            // create adapter
+            adapter = new FragmentFavoritesGridViewAdapter(getActivity(), listData);
 
-	}// end-func onCreateView
+            // set data list view
+            gvFavorites.setAdapter(adapter);
 
+        } catch (Exception ex) {
+            MZLog.d(Log.getStackTraceString(ex));
+        }
+    }
 
-	@Override
-	public void onResume() {
-
-		super.onResume();
-		try{
-			//get all book
-			listData = MyApp.listAllBookFavorites;
-
-			// create adapter
-			adapter = new FragmentFavoritesGridViewAdapter(getActivity(), listData);
-
-			// set data list view
-			gvFavorites.setAdapter(adapter);
-
-		} catch (Exception ex){
-			MZLog.d(Log.getStackTraceString(ex));
-		}
-
-	}// end-func onResume
-
-
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO events
-
-	AdapterView.OnItemClickListener gvFavoritesEvent = new AdapterView.OnItemClickListener() {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-			BookOffline book = (BookOffline) adapter.getItem(position);
-			Intent intent = new Intent(getActivity(), ReadingActivity.class);
-			intent.putExtra("BOOK", book);
-			startActivity(intent);
-		}
-	};
-
+    /**
+     * events
+     */
+    @OnItemClick(R.id.gvFavorites)
+    void gvFavoritesItemClick(int position) {
+        BookOffline book = (BookOffline) adapter.getItem(position);
+        Intent intent = new Intent(getActivity(), ReadingActivity.class);
+        intent.putExtra("BOOK", book);
+        startActivity(intent);
+    }
 }

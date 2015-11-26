@@ -78,6 +78,7 @@ public class BookStoreDetailFragment extends Fragment {
         // set text
         tvAuthorStoreDetail.setText(MyApp.currentBookDetail.getBookAuthor());
         tvDescription.setText(MyApp.currentBookDetail.getBookDesciption());
+        ratingBar.setRating(MyApp.currentBookDetail.getBookRate());
 
         // events
         btnDownload.setOnClickListener(btnDownloadEvent);
@@ -95,6 +96,11 @@ public class BookStoreDetailFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MyApp.isNoBack = false;
+    }
 
     /**
      * events
@@ -401,4 +407,9 @@ public class BookStoreDetailFragment extends Fragment {
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MyApp.isNoBack = true;
+    }
 }

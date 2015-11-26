@@ -7,10 +7,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +23,10 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import ebook.ken.activity.R;
 import ebook.ken.activity.SectionActivity;
 import ebook.ken.adapter.FragmentBookStoreAdapter;
@@ -43,51 +45,54 @@ import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 public class BookStoreFragment extends Fragment {
 
     private View view;
-    private PullToRefreshListView lvStore;
-    private LinearLayout llSection;
-    private TextView tvSectionName, tvIsOnline;
-    private ProgressBar pbRefresh;
+    PullToRefreshListView lvStore;
+
+    @Bind(R.id.tvIsOnline)
+    TextView tvIsOnline;
+
+    @Bind(R.id.tvSectionName)
+    TextView tvSectionName;
+
+    @Bind(R.id.pbRefresh)
+    ProgressBar pbRefresh;
+
+    @Bind(R.id.llSection)
+    LinearLayout llSection;
+
     private FragmentBookStoreAdapter adapter;
 
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // TODO fragment life cycle
-
+    /**
+     * fragment life cycle
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.fragment_book_store, container, false);
+        lvStore = (PullToRefreshListView) view.findViewById(R.id.lvStore);
 
-        // init controls
-        lvStore         = (PullToRefreshListView) view.findViewById(R.id.pull_to_refresh_listview);
-        llSection		= (LinearLayout) view.findViewById(R.id.llSection);
-        tvSectionName	= (TextView) view.findViewById(R.id.tvSectionName);
-        tvIsOnline      = (TextView) view.findViewById(R.id.tvIsOnline);
-        pbRefresh       = (ProgressBar) view.findViewById(R.id.pbRefresh);
-
+        ButterKnife.bind(this, view);
         // events
-        llSection.setOnClickListener(llSectionEvent);
-        // Set a listener to be invoked when the list should be refreshed.
-//        lvStore.setPullRotateImage(getResources().getDrawable(R.drawable.rotate_img));
-        lvStore.setOnItemClickListener(lvStoreEvent);
+        lvStore.setOnItemClickListener(lvStoreItemClick);
         lvStore.setOnRefreshListener(lvStoreRefresh);
 
         return view;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
-
-        // load data from server
         loadDataFromServer();
+    }
 
-    }// end-func onStart
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
 
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // TODO events
-
+    /**
+     * events
+     */
     OnRefreshListener lvStoreRefresh = new OnRefreshListener() {
         @Override
         public void onRefresh(PullToRefreshBase pullToRefreshBase) {
@@ -102,15 +107,13 @@ public class BookStoreFragment extends Fragment {
                     // thong bao khong co ket noi mang
                     tvIsOnline.setVisibility(View.VISIBLE);
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 MZLog.d(Log.getStackTraceString(ex));
             }
         }
-    };// end-event lvStoreRefresh
+    };
 
-
-    OnItemClickListener lvStoreEvent = new OnItemClickListener(){
-
+    AdapterView.OnItemClickListener lvStoreItemClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             try {
@@ -122,32 +125,27 @@ public class BookStoreFragment extends Fragment {
 
                 // start child fragment
                 ((MaterialNavigationDrawer) getActivity()).setFragmentChild(new BookStoreDetailFragment(), item.getBookName());
-            } catch ( Exception ex){
+            } catch (Exception ex) {
                 MZLog.d(Log.getStackTraceString(ex));
             }
         }
-    };// end-event lvStoreEvent
+    };
 
-
-    OnClickListener llSectionEvent = new OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            try{
-                if( MyApp.listSection!= null ){
-                    Intent i = new Intent(getActivity(), SectionActivity.class);
-                    startActivityForResult(i, SectionActivity.REQUEST_CODE);
-                }
-            } catch(Exception ex) {
-                MZLog.d(Log.getStackTraceString(ex));
+    @OnClick(R.id.llSection)
+    void llSection() {
+        try {
+            if (MyApp.listSection != null) {
+                Intent i = new Intent(getActivity(), SectionActivity.class);
+                startActivityForResult(i, SectionActivity.REQUEST_CODE);
             }
+        } catch (Exception ex) {
+            MZLog.d(Log.getStackTraceString(ex));
         }
-    };// end-event llSectionEvent
-
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try{
-            if(resultCode == SectionActivity.RESULT_OK){
+        try {
+            if (resultCode == SectionActivity.RESULT_OK) {
                 SectionOnline result = (SectionOnline) data.getSerializableExtra(SectionActivity.RESULT);
                 MyApp.currentSection = result;
 
@@ -155,7 +153,7 @@ public class BookStoreFragment extends Fragment {
                 tvSectionName.setText(result.getSectionName());
 
                 // load book by section
-                if( MyUtils.isOnline(getActivity()) ){
+                if (MyUtils.isOnline(getActivity())) {
                     new AsyncLoadBookBySection().execute(result.getSectionId());
                 } else {
                     Toast.makeText(getActivity(), "Hiện không có kết nối internet", Toast.LENGTH_SHORT).show();
@@ -165,51 +163,43 @@ public class BookStoreFragment extends Fragment {
             if (resultCode == SectionActivity.RESULT_CANCELED) {
                 //Write your code if there's no result
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             MZLog.d(Log.getStackTraceString(ex));
         }
-    };// end-event onActivityResult
+    }
 
+    /**
+     * function
+     */
+    private void loadDataFromServer() {
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // TODO function
-
-    private void loadDataFromServer(){
-
-        if(MyUtils.isOnline(getActivity())){
+        if (MyUtils.isOnline(getActivity())) {
 
             // load section
-            if( MyApp.listSection == null){
+            if (MyApp.listSection == null) {
                 new AsyncLoadSection().execute();
             }
 
             // load first page of book store
-            if( MyApp.listBookOnlineFirstPage == null ){
+            if (MyApp.listBookOnlineFirstPage == null) {
                 new AsyncLoadBookByFirstPage().execute();
             } else {
-                if(MyApp.isInSection){
-                    adapter = new FragmentBookStoreAdapter(getActivity(), MyApp.listBookBySection);
-                    lvStore.setAdapter(adapter);
-                    tvSectionName.setText(MyApp.currentSection.getSectionName());
-                } else {
-                    adapter = new FragmentBookStoreAdapter(getActivity(), MyApp.listBookOnlineFirstPage);
-                    lvStore.setAdapter(adapter);
-                    MyApp.isInSection = false;
-                    tvSectionName.setText("Thể Loại");
-                }
+                adapter = new FragmentBookStoreAdapter(getActivity(), MyApp.listBookOnlineFirstPage);
+                lvStore.setAdapter(adapter);
+                tvSectionName.setText("Thể Loại");
             }
         } else {
             tvIsOnline.setVisibility(View.VISIBLE);
-            if( MyApp.listBookOnlineFirstPage == null ){
+            if (MyApp.listBookOnlineFirstPage == null) {
                 lvStore.onRefreshComplete();
             }
         }
 
     }//end-func loadDataFromServer
 
-
-    ///////////////////////////////////////////////////////////////////////////////////
-    //TODO async task
+    /**
+     * async task
+     */
 
     private class AsyncLoadSection extends AsyncTask<Void, Void, List<SectionOnline>> {
 
@@ -231,7 +221,7 @@ public class BookStoreFragment extends Fragment {
     }// end-async AsyncLoadSection
 
 
-    private class AsyncLoadBookByFirstPage extends AsyncTask<Void, Void, List<BookOnline>>{
+    private class AsyncLoadBookByFirstPage extends AsyncTask<Void, Void, List<BookOnline>> {
 
         @Override
         protected void onPreExecute() {
@@ -258,7 +248,7 @@ public class BookStoreFragment extends Fragment {
             pbRefresh.setVisibility(View.GONE);
             lvStore.onRefreshComplete();
 
-            if(result != null){
+            if (result != null) {
                 MyApp.listBookOnlineFirstPage = result;
                 adapter = new FragmentBookStoreAdapter(getActivity(), result);
                 lvStore.setAdapter(adapter);
@@ -267,8 +257,7 @@ public class BookStoreFragment extends Fragment {
     }// end-async AsyncLoadBookByFirstPage
 
 
-    private class AsyncLoadBookBySection extends AsyncTask<Integer, Void, List<BookOnline>>{
-
+    private class AsyncLoadBookBySection extends AsyncTask<Integer, Void, List<BookOnline>> {
         @Override
         protected void onPreExecute() {
             // show progressbar
@@ -285,7 +274,7 @@ public class BookStoreFragment extends Fragment {
         protected List<BookOnline> doInBackground(Integer... params) {
             try {
                 return MyApp.listBookBySection = JsonHandler
-                                                .getBookOnline(JsonHandler.GET_BOOK_BY_SECTION, "" + params[0]);
+                        .getBookOnline(JsonHandler.GET_BOOK_BY_SECTION, "" + params[0]);
 
             } catch (JSONException e) {
                 MZLog.d(Log.getStackTraceString(e));
@@ -307,7 +296,7 @@ public class BookStoreFragment extends Fragment {
                     adapter = new FragmentBookStoreAdapter(getActivity(), result);
                     lvStore.setAdapter(adapter);
                 }// end-if
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 MZLog.d(Log.getStackTraceString(ex));
             }
         }

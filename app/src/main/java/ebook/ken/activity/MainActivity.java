@@ -1,18 +1,15 @@
 package ebook.ken.activity;
 
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -20,7 +17,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import ebook.ken.dao.Database;
 import ebook.ken.fragment.BookStoreFragment;
-import ebook.ken.fragment.BookStoreTabHostFragment;
 import ebook.ken.fragment.FavoritesFragment;
 import ebook.ken.fragment.HomeCardGridFragment;
 import ebook.ken.fragment.HomeCardListFragment;
@@ -32,27 +28,20 @@ import ebook.ken.utils.FileHandler;
 import ebook.ken.utils.MZLog;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 
-import com.facebook.android.Util;
-
 public class MainActivity extends MaterialNavigationDrawer implements SearchView.OnQueryTextListener{
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    public static int FRAGMENT_STATE = 0x0;
-    public static final int FRAGMENT_STATE_BOOKS = 0x1,
-                            FRAGMENT_STATE_FAVORITES = 0x2,
-                            FRAGMENT_STATE_BOOKSTORE = 0x3;
     public static String textSearch = "";
     private SearchView mSearchView;
 
     private SharedPreferences prefs = null;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
     private Database database;
     GoogleCloudMessaging gcm;
 
-    /**
-     * TODO: activity life cycle
-     */
 
+    /**
+     *  activity life cycle
+     */
     @Override
     public void init(Bundle bundle) {
 
@@ -63,7 +52,7 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
             // set section
             this.addSection(newSection("Home", R.drawable.ic_home, new HomeFragment()));
             this.addSection(newSection("Favorites", R.drawable.ic_communities, new FavoritesFragment()));
-            this.addSection(newSection("Book Store", R.drawable.ic_pages, new BookStoreTabHostFragment()));
+            this.addSection(newSection("Book Store", R.drawable.ic_pages, new BookStoreFragment()));
             this.addSection(newSection("Group", R.drawable.ic_whats_hot, new InfoFragment()));
 
             // get shared preferences for create app folder
@@ -95,7 +84,7 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
              * TODO GCM
              */
             boolean state = prefs.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-            if (checkPlayServices()) {
+            if (checkPlayServices() && !state ) {
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
@@ -114,7 +103,7 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
     }// end-func onHomeAsUpSelected
 
     /**
-     * TODO option menu
+     * option menu
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -133,16 +122,11 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }// end-if
-
         return super.onOptionsItemSelected(item);
-    }// end-func onOptionsItemSelected
+    }
 
     /**
-     * TODO setup search
+     *  setup search
      */
     private void setupSearchView() {
 
@@ -156,22 +140,20 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
     }
 
     /**
-     * TODO hardware
+     * hardware
      */
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
         Fragment current = (Fragment) getCurrentSection().getTargetFragment();
-
         if (current instanceof HomeFragment
-            || current instanceof FavoritesFragment) {
+                || current instanceof FavoritesFragment) {
             MainActivity.this.finish();
         }
     }
 
     /**
-     * TODO check play services
+     * check play services
      */
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
@@ -190,7 +172,7 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
     }
 
     /**
-     * TODO search
+     * search
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -204,9 +186,10 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
         if (fmHomeContent instanceof HomeCardListFragment) {
             HomeCardListFragment.adapter.filter(newText);
         } else if (fmHomeContent instanceof HomeCardGridFragment) {
-//            HomeGridViewFragment.adapter.filter(newText);
+
         }
 
         return true;
     }
+
 }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -19,7 +20,8 @@ import ebook.ken.utils.JsonHandler;
 public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
 	
 	private ImageView ivCover;
-	private TextView tvNameBookOnline, tvAuthorBookOnline, tvDownloadTotal, tvRate;
+	private TextView tvNameBookOnline, tvAuthorBookOnline, tvDownloadTotal;
+	private RatingBar ratingBar;
 	public ImageLoader imageLoader;
 
 
@@ -47,7 +49,7 @@ public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
 					R.layout.item_book_store, parent, false);
 		}
 
-		tvRate				= (TextView) convertView.findViewById(R.id.tvRate);
+		ratingBar			= (RatingBar) convertView.findViewById(R.id.ratingBar);
 		ivCover				= (ImageView) convertView.findViewById(R.id.ivCoverBookStore);
 		tvNameBookOnline	= (TextView) convertView.findViewById(R.id.tvNameBookStore);
 		tvAuthorBookOnline	= (TextView) convertView.findViewById(R.id.tvAuthorBookOnline);
@@ -57,7 +59,7 @@ public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
 		tvDownloadTotal		.setText(String.valueOf(itemBook.getBookTotalDownload()));
 		tvNameBookOnline	.setText(itemBook.getBookName());
 		tvAuthorBookOnline	.setText(itemBook.getBookAuthor());
-        tvRate              .setText(String.valueOf(itemBook.getBookRate()));
+		ratingBar           .setRating(itemBook.getBookRate());
 		imageLoader			.DisplayImage(JsonHandler.BASE_URL + itemBook.getBookCoverPath(), ivCover);
 		
 		return convertView;

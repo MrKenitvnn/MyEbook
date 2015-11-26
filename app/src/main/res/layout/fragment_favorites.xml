@@ -15,26 +15,13 @@
             android:layout_height="fill_parent" />
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/linearBottom"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_footer_main"
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fbChangeStyle"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:backgroundTint="#0288D1"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:alpha="0.9"
-        android:background="@color/color_accent">
-
-        <ImageView
-            android:id="@+id/ivChangeStyle"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:clickable="true"
-            android:gravity="center"
-            android:padding="0dp"
-            android:src="@drawable/icon_view_grid" />
-    </RelativeLayout>
-
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/activity_vertical_margin"/>
 </RelativeLayout>

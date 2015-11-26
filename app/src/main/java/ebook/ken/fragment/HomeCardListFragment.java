@@ -25,24 +25,19 @@ import ebook.ken.utils.MZLog;
 
 
 public class HomeCardListFragment extends Fragment {
-    // UI
-    private View view;
-    private RecyclerView recyclerView;
-
-    //  data access object
-    private BookOfflineDao bookOfflineDao;
 
     static final int ANIMATION_DURATION = 400;
 
-    // list data book offline
-    private List<BookOffline> listData;
-
-    // adapter
+    private View view;
+    private RecyclerView recyclerView;
+    private List<BookOffline> listData; // list data book offline
     public static RecyclerListViewAdapter adapter;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // TODO fragment life cycle
+    private BookOfflineDao bookOfflineDao; //data access object
 
+    /**
+     * fragment life cycle
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

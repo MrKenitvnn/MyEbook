@@ -3,6 +3,7 @@ package ebook.ken.utils;
 import android.app.Application;
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ebook.ken.objects.BookFavorite;
@@ -23,6 +24,7 @@ public class MyApp extends Application{
 	public static boolean isInListView = true;
 	// check is in section view
 	public static boolean isInSection  = false;
+	public static boolean isNoBack = false;
 
 	// current fragment ViewPager
 	public static int currentPage = BOOKS ;
@@ -33,6 +35,7 @@ public class MyApp extends Application{
 	// list data
 	public static List<SectionOnline> listSection			= null;
 	public static List<BookOnline> listBookOnlineFirstPage	= null;
+	public static List<List<BookOnline>> listBookOfSection  = new ArrayList<List<BookOnline>>();;
 	public static List<BookOnline> listBookBySection		= null;
 	public static List<BookOffline> listBookOffline 		= null;
 	public static BookOnline currentBookDetail				= null;

@@ -13,6 +13,9 @@ import android.widget.ListView;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 import ebook.ken.activity.R;
 import ebook.ken.activity.ReadingActivity;
 import ebook.ken.adapter.FragmentFavoritesListViewAdapter;
@@ -22,64 +25,55 @@ import ebook.ken.utils.MyApp;
 
 public class FavoritesListViewFragment extends Fragment {
 
+    private View view;
 
-	// UI
-	private View view;
-	private ListView lvFavorites;
+    @Bind(R.id.lvFavorites)
+    ListView lvFavorites;
 
-	// list data book offline
-	private List<BookOffline> listData;
+    private List<BookOffline> listData; // list data book offline
 
-	// adapter
-	public static FragmentFavoritesListViewAdapter adapter;
+    public static FragmentFavoritesListViewAdapter adapter;
 
+    /**
+     * fragment life cycle
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_favorites_listview,
+                container, false);
+        ButterKnife.bind(this, view);
 
-		view = inflater.inflate(R.layout.fragment_favorites_listview,
-				container, false);
+        return view;
+    }
 
-		// init controls
-		lvFavorites = (ListView) view.findViewById(R.id.lvFavorites);
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            //get all book
+            listData = MyApp.listAllBookFavorites;
 
-		// events
-		lvFavorites.setOnItemClickListener(lvFavoriteEvent);
+            // create adapter
+            adapter = new FragmentFavoritesListViewAdapter(getActivity(), listData);
 
-		return view;
-	}
+            // set data list view
+            lvFavorites.setAdapter(adapter);
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		try{
-			//get all book
-			listData = MyApp.listAllBookFavorites;
+        } catch (Exception ex) {
+            MZLog.d(Log.getStackTraceString(ex));
+        }
+    }
 
-			// create adapter
-			adapter = new FragmentFavoritesListViewAdapter(getActivity(), listData);
-
-			// set data list view
-			lvFavorites.setAdapter(adapter);
-
-		}catch (Exception ex){
-			MZLog.d(Log.getStackTraceString(ex));
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO events
-
-	AdapterView.OnItemClickListener lvFavoriteEvent = new AdapterView.OnItemClickListener() {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-			BookOffline book = (BookOffline) adapter.getItem(position);
-			Intent intent = new Intent(getActivity(), ReadingActivity.class);
-			intent.putExtra("BOOK", book);
-			startActivity(intent);
-		}
-	};
-
+    /**
+     * event
+     */
+    @OnItemClick(R.id.lvFavorites)
+    void lvFavoriteItemClick(int position) {
+        BookOffline book = (BookOffline) adapter.getItem(position);
+        Intent intent = new Intent(getActivity(), ReadingActivity.class);
+        intent.putExtra("BOOK", book);
+        startActivity(intent);
+    }
 }

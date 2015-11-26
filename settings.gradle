@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':MaterialNavigationDrawerModule'
+project(':MaterialNavigationDrawerModule').projectDir = new File('app/libs/MaterialNavigationDrawerModule')

@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <ProgressBar
         android:id="@+id/pbRefresh"
         style="?android:attr/progressBarStyleSmall"
@@ -12,26 +11,26 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminate="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tvIsOnline"
-        android:padding="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:background="#e0e0e0"
+        android:padding="10dp"
         android:text="Hiện không có kết nối internet"
         android:textColor="#c07e005e"
         android:textSize="13sp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <com.handmark.pulltorefresh.library.PullToRefreshListView
-        android:layout_below="@+id/tvIsOnline"
-        android:id="@+id/pull_to_refresh_listview"
+        android:id="@+id/lvStore"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
+        android:layout_below="@+id/tvIsOnline"
         android:paddingBottom="@dimen/height_footer_main" />
 
     <RelativeLayout
@@ -59,16 +58,7 @@
                 android:text="Thể Loại"
                 android:textColor="#FFF"
                 android:textSize="20sp" />
-
-            <ImageView
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="5dp"
-                android:src="@drawable/img_spinner" />
         </LinearLayout>
-
     </RelativeLayout>
-
 
 </RelativeLayout>

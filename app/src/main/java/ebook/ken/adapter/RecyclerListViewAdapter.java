@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import ebook.ken.activity.R;
 import ebook.ken.fragment.HomeFragment;
 import ebook.ken.listener.CustomItemClickListener;
@@ -126,21 +128,19 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
      */
     public class ListViewHolder extends RecyclerView.ViewHolder {
 
-        protected ImageView ivBooksCoverList;
-        protected TextView tvBooksName, tvBooksAuthor;
-        protected CheckBox cbFavorite;
+        @Bind(R.id.cbFavorite) CheckBox cbFavorite;
+        @Bind(R.id.tvBooksName) TextView tvBooksName;
+        @Bind(R.id.tvBooksAuthor) TextView tvBooksAuthor;
+        @Bind(R.id.ivBooksCoverList) ImageView ivBooksCoverList;
 
         public ListViewHolder(View itemView) {
             super(itemView);
-            ivBooksCoverList = (ImageView) itemView.findViewById(R.id.ivBooksCoverList);
-            tvBooksName = (TextView) itemView.findViewById(R.id.tvBooksName);
-            tvBooksAuthor = (TextView) itemView.findViewById(R.id.tvBooksAuthor);
-            cbFavorite = (CheckBox) itemView.findViewById(R.id.cbFavorite);
+            ButterKnife.bind(this, itemView);
         }
     }
 
     /**
-     * TODO lọc khi nhập ký tự trên searchview
+     * lọc khi nhập ký tự trên searchview
      */
     public void filter(String charText) {
         charText	= charText.toLowerCase(Locale.getDefault());
