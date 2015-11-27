@@ -8,18 +8,10 @@ public class BookOnline extends ebook.ken.objects.Book {
 	private int bookTotalView		= 0;
 	private int bookTotalDownload	= 0;
 	private int bookSectionId		= 0;
-	
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO constructor
-	
 	public BookOnline() {
 	}
-	
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO getters & setters
-	
 	public String getBookDesciption() {
 		return bookDesciption;
 	}
@@ -64,7 +56,4 @@ public class BookOnline extends ebook.ken.objects.Book {
 		this.bookSectionId = bookSectionId;
 		return this;
 	}
-	
-	
-	
 }

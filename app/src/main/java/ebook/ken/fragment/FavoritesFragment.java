@@ -47,9 +47,6 @@ public class FavoritesFragment extends Fragment {
         // setup dao
         bookFavoriteDao = new BookFavoriteDao(getActivity());
 
-        // set list book favorites
-        MyApp.listAllBookFavorites = bookFavoriteDao.loadAllBookOfFavorites();
-
         // enable option menu
         setHasOptionsMenu(true);
 
@@ -60,16 +57,20 @@ public class FavoritesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        // set first fragment
         if (MyApp.isInListView) {
             MyUtils.navigationToView((FragmentActivity) getActivity(),
                     new FavoritesListViewFragment(), R.id.fmFavoriteContent);
         } else {
             MyUtils.navigationToView((FragmentActivity) getActivity(),
                     new FavoritesGridViewFragment(), R.id.fmFavoriteContent);
-        }// end-if
+        }
+    }
 
-    }// end-func onStart
+    @Override
+    public void onResume() {
+        super.onResume();
+        MyApp.listAllBookFavorites = bookFavoriteDao.loadAllBookOfFavorites();
+    }
 
     /**
      * events
@@ -102,8 +103,8 @@ public class FavoritesFragment extends Fragment {
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        MenuItem item = menu.findItem(R.id.search);
-//        item.setVisible(false);
+        MenuItem item = menu.findItem(R.id.search);
+        item.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 }

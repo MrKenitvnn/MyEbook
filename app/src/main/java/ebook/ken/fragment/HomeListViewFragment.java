@@ -38,8 +38,6 @@ import nl.siegmann.epublib.epub.EpubReader;
 
 public class HomeListViewFragment extends Fragment implements AdapterView.OnItemLongClickListener{
 
-	// define variable
-
 	// UI
 	private View view;
 	private ListView lvHome;
@@ -55,8 +53,9 @@ public class HomeListViewFragment extends Fragment implements AdapterView.OnItem
 	public static FragmentHomeListViewAdapter adapter;
 
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO fragment life cycle
+	/**
+	 * fragment life cycle
+	 */
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

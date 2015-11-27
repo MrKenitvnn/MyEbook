@@ -11,93 +11,77 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import ebook.ken.adapter.SectionAdapter;
 import ebook.ken.objects.SectionOnline;
 import ebook.ken.utils.MyApp;
 
 
-public class SectionActivity extends Activity{
+public class SectionActivity extends Activity {
 
-	public static final int 
-						REQUEST_CODE = 0x1,
-						RESULT_OK = 0x0,
-						RESULT_CANCELED = 0x2;
-	
-	public static final String
-						RESULT = "section_id";	
+    public static final int
+            REQUEST_CODE = 0x1,
+            RESULT_OK = 0x0,
+            RESULT_CANCELED = 0x2;
 
-	Intent returnIntent; // intent for return main activity
-	
-	// controls
-	private Button btnCloseSection;
-	private ListView lvSection;
+    public static final String
+            RESULT = "section_id";
 
-	SectionAdapter adapter; // variable in activity
+    Intent returnIntent; // intent for return main activity
 
-	/**
-	 * TODO: activity life cycle
-	 **/
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    // controls
+    @Bind(R.id.btnCloseSection) Button btnCloseSection;
+    @Bind(R.id.lvSection) ListView lvSection;
 
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_section);
-		
-		// init controls
-		btnCloseSection = (Button) findViewById(R.id.btnCloseSection);
-		lvSection = (ListView) findViewById(R.id.lvSection);
-		
-		// events
-		btnCloseSection.setOnClickListener(setOnClickListenerEvent);
-		lvSection.setOnItemClickListener(lvSectionItemClick);
-		
-	}//end-func onCreate
+    SectionAdapter adapter; // variable in activity
 
-	@Override
-	protected void onResume() {
+    /**
+     * activity life cycle
+     **/
 
-		super.onResume();
-		// set data for listView section
-		if(MyApp.listSection != null){
-			adapter = new SectionAdapter(this, MyApp.listSection);
-			lvSection.setAdapter(adapter);
-		}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-	}// end-func onResume
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_section);
 
+        ButterKnife.bind(this);
+    }
 
-	/**
-	 * TODO: Event
-	 */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // set data for listView section
+        if (MyApp.listSection != null) {
+            adapter = new SectionAdapter(this, MyApp.listSection);
+            lvSection.setAdapter(adapter);
+        }
+    }
 
-	OnClickListener setOnClickListenerEvent = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			returnIntent = new Intent();
-			setResult(RESULT_CANCELED, returnIntent);
-			finish();
-		}
-	};// end-func setOnClickListenerEvent
-	
-	
-	OnItemClickListener lvSectionItemClick = new OnItemClickListener() {
+    /**
+     * events
+     */
 
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
+    @OnClick(R.id.btnCloseSection)
+    void btnCloseSectionClick() {
+        returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
 
-			// get object section click
-			SectionOnline item = adapter.getItem(position);
+    @OnItemClick(R.id.lvSection)
+    void lvSectionItemClick(int position) {
+        // get object section click
+        SectionOnline item = adapter.getItem(position);
 
-			// setup intent
-			returnIntent = new Intent();
-			returnIntent.putExtra(RESULT, item);
-			setResult(RESULT_OK, returnIntent);
-			finish();
-
-		}
-	};// end-event lvSectionItemClick
-	
+        // setup intent
+        returnIntent = new Intent();
+        returnIntent.putExtra(RESULT, item);
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
 }

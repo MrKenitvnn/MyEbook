@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,7 @@ import ebook.ken.utils.MyApp;
 /**
  * Created by ken on 04/11/2015.
  */
-public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListViewAdapter.ListViewHolder> {
+public class HomeRecyclerListViewAdapter extends RecyclerView.Adapter<HomeRecyclerListViewAdapter.ListViewHolder> {
 
     private static List<BookOffline> listBookOnline = null;
     private List<BookOffline> listBookTmp = null;
@@ -39,7 +40,7 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
     CustomItemClickListener listener;
 
 
-    public RecyclerListViewAdapter(Context mContext, List<BookOffline> mListBookOnline, CustomItemClickListener listener) {
+    public HomeRecyclerListViewAdapter(Context mContext, List<BookOffline> mListBookOnline, CustomItemClickListener listener) {
         this.context = mContext;
 
         this.listBookOnline = mListBookOnline;
@@ -59,7 +60,7 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
                 listener.onItemClick(v, mViewHolder.getPosition());
             }
         });
-        itemView.setOnLongClickListener(new View.OnLongClickListener(){
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View v) {
@@ -78,18 +79,21 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
         if (item.getBookCoverPath() != null) {
             File imgFile = new File(item.getBookCoverPath());
             if (imgFile.exists()) {
-                Uri uri	  = Uri.fromFile(imgFile);
+                Uri uri = Uri.fromFile(imgFile);
                 holder.ivBooksCoverList.setImageURI(uri);
             }
         } else {
-            Resources res = context.getResources();
-            Drawable myDrawable = context.getDrawable(R.drawable.default_book_cover);
-            holder.ivBooksCoverList.setImageDrawable(myDrawable);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.ivBooksCoverList.setImageDrawable(
+                        MyApp.getAppContext().getDrawable(R.drawable.default_book_cover));
+            } else {
+                holder.ivBooksCoverList.setImageResource(R.drawable.default_book_cover);
+            }
         }// end-if;
 
         // with any book, loop though items of list favorites to show checkbox
         for (int i = 0; i < MyApp.listAllFavorites.size(); i++) {
-            if( item.getBookId() == MyApp.listAllFavorites.get(i).getBookOfflineId() ){
+            if (item.getBookId() == MyApp.listAllFavorites.get(i).getBookOfflineId()) {
                 holder.cbFavorite.setChecked(true);
             }
         }
@@ -104,7 +108,7 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
                         HomeFragment.bookFavoriteDao.delBookFavorite(item.getBookId());
                         MyApp.listAllFavorites = HomeFragment.bookFavoriteDao.loadAllFavorites();
                     }
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
@@ -119,37 +123,22 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
         return 0;
     }
 
-    public BookOffline getItem (int position) {
+    public BookOffline getItem(int position) {
         return listBookOnline.get(position);
     }
 
-    /**
-     * TODO: inner class ViewHolder
-     */
-    public class ListViewHolder extends RecyclerView.ViewHolder {
-
-        @Bind(R.id.cbFavorite) CheckBox cbFavorite;
-        @Bind(R.id.tvBooksName) TextView tvBooksName;
-        @Bind(R.id.tvBooksAuthor) TextView tvBooksAuthor;
-        @Bind(R.id.ivBooksCoverList) ImageView ivBooksCoverList;
-
-        public ListViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
 
     /**
      * lọc khi nhập ký tự trên searchview
      */
     public void filter(String charText) {
-        charText	= charText.toLowerCase(Locale.getDefault());
-        listBookOnline	.clear();
+        charText = charText.toLowerCase(Locale.getDefault());
+        listBookOnline.clear();
         if (charText.length() == 0) {
             listBookOnline.addAll(listBookTmp);
         } else {
             for (BookOffline wp : listBookTmp) {
-                if (wp.getBookName().toLowerCase(Locale.getDefault()).contains(Character.toString(charText.charAt(charText.length()-1)))
+                if (wp.getBookName().toLowerCase(Locale.getDefault()).contains(Character.toString(charText.charAt(charText.length() - 1)))
                         || wp.getBookAuthor().toLowerCase(Locale.getDefault()).contains(charText)) {
                     listBookOnline.add(wp);
                 }// end-if
@@ -161,5 +150,36 @@ public class RecyclerListViewAdapter extends RecyclerView.Adapter<RecyclerListVi
     public void closeSearch() {
         // mLocations.addAll(arraylist);
         notifyDataSetChanged();
+    }
+
+
+    /**
+     * event del a book
+     */
+    public void eventDelABook(int id) {
+        listBookOnline.remove(id);
+        listBookTmp.remove(id);
+        notifyDataSetChanged();
+    }
+
+
+    /**
+     * inner class ViewHolder
+     */
+    public class ListViewHolder extends RecyclerView.ViewHolder {
+
+        @Bind(R.id.cbFavorite)
+        CheckBox cbFavorite;
+        @Bind(R.id.tvBooksName)
+        TextView tvBooksName;
+        @Bind(R.id.tvBooksAuthor)
+        TextView tvBooksAuthor;
+        @Bind(R.id.ivBooksCoverList)
+        ImageView ivBooksCoverList;
+
+        public ListViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
     }
 }

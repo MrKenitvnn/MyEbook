@@ -2,6 +2,11 @@ package ebook.ken.utils;
 
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +28,8 @@ public class JsonHandler {
 
     public static final String BASE_URL = "http://mrkenitvnn.esy.es/api/includes/";
     public static final String BASE_URL_2 = "http://kensource-001-site1.1tempurl.com/";
+
+    public static final String URL_LOAD_SECTION = BASE_URL + "load_section.php";
 
     private static final String
             TAG_ID = "_id",
@@ -62,7 +69,6 @@ public class JsonHandler {
             if (jsonResponse == null) {
                 return null;
             }
-
             JSONArray jsa = new JSONArray(jsonResponse);
             result = new ArrayList<SectionOnline>();
             for (int i = 0; i < jsa.length(); i++) {
@@ -89,6 +95,36 @@ public class JsonHandler {
         return result;
     }
 
+    public static List<SectionOnline> makeSectionFromJsonArray(JSONArray jsa) {
+        List<SectionOnline> result = null;
+        try {
+            SectionOnline section = null;
+            result = new ArrayList<SectionOnline>();
+            for (int i = 0; i < jsa.length(); i++) {
+
+                // create new section object
+                section = new SectionOnline();
+                // create json object
+                JSONObject jso = jsa.getJSONObject(i);
+
+                // get and set value to object section
+                section.setSectionId(Integer.parseInt(jso.getString(SECTION_ID)));
+                section.setSectionName(jso.getString(SECTION_NAME));
+
+                // add to list
+                result.add(section);
+
+                MZLog.d("Section: " + section.getSectionName());
+            }// end-for
+
+        } catch (JSONException ex) {
+            MZLog.d(Log.getStackTraceString(ex));
+        }// end-try
+
+        return result;
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////////
     // TODO get list Book
 
@@ -101,29 +137,53 @@ public class JsonHandler {
 
             case GET_BOOK_BY_PAGE:
                 jsonResponse = getJSONString(BASE_URL + "load_book.php?page=" + value.trim(), TIME_OUT);
-
-//	    	Log.d(">>> ken <<<", "1. GET BOOK BY PAGE: "+jsonResponse);
+                MZLog.d(">>> ken <<<", "1. GET BOOK BY PAGE: " + jsonResponse);
                 result = listBookByJson(jsonResponse);
-
                 break;
             case GET_BOOK_BY_SEARCH:
                 jsonResponse = getJSONString(BASE_URL + "load_book.php?book_name=" + value.trim(), TIME_OUT);
-
-//			Log.d(">>> ken <<<", "2. GET BY SEARCH : "+jsonResponse);
+                MZLog.d(">>> ken <<<", "2. GET BY SEARCH : " + jsonResponse);
                 result = listBookByJson(jsonResponse);
-
                 break;
             case GET_BOOK_BY_SECTION:
                 jsonResponse = getJSONString(BASE_URL + "load_book.php?section_id=" + value.trim(), TIME_OUT);
-
-//			Log.d(">>> ken <<<", "3. GET BY SECTION : "+jsonResponse);
+                Log.d(">>> ken <<<", "3. GET BY SECTION : " + jsonResponse);
                 result = listBookByJson(jsonResponse);
-
                 break;
         }// end-switch
 
         return result;
     }// end-func getBookOnline
+
+
+    public static List<BookOnline> listBookFromJsonArray(JSONArray jsaList) throws JSONException {
+        List<BookOnline> result = new ArrayList<BookOnline>();
+        BookOnline item;
+        // loop thought per json object
+        for (int i = 0; i < jsaList.length(); i++) {
+
+            // get json object
+            JSONObject jso = jsaList.getJSONObject(i);
+
+            //create instance
+            item = new BookOnline();
+
+            // set data to object
+            item.setBookId(Integer.valueOf(jso.getString(TAG_ID)))
+                    .setBookAuthor(jso.getString(TAG_AUTHOR))
+                    .setBookName(jso.getString(TAG_NAME))
+                    .setBookCoverPath(jso.getString(TAG_COVER_PATH))
+                    .setBookFilePath(jso.getString(TAG_FILE_PATH));
+            item.setBookDesciption(jso.getString(TAG_DESCRIPTION))
+                    .setBookRate(Float.valueOf(jso.getString(TAG_RATE)));
+            item.setBookTotalDownload(jso.getInt(TAG_TOTAL_DOWNLOAD));
+
+            // add to result list
+            result.add(item);
+
+        }
+        return result;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // TODO get list book by json
@@ -218,7 +278,7 @@ public class JsonHandler {
             }
         }
         return null;
-    }// end-func getJSONString
+    }
 
 }
 

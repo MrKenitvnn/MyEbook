@@ -1,9 +1,9 @@
 package ebook.ken.fragment;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,16 +12,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
+import java.io.File;
 import java.util.List;
 
 import ebook.ken.activity.R;
 import ebook.ken.activity.ReadingActivity;
+import ebook.ken.dao.BookFavoriteDao;
 import ebook.ken.listener.CustomItemClickListener;
-import ebook.ken.adapter.RecyclerListViewAdapter;
+import ebook.ken.adapter.HomeRecyclerListViewAdapter;
 import ebook.ken.dao.BookOfflineDao;
 import ebook.ken.objects.BookOffline;
+import ebook.ken.utils.FileHandler;
 import ebook.ken.utils.MZLog;
+import ebook.ken.utils.MyApp;
 
 
 public class HomeCardListFragment extends Fragment {
@@ -31,9 +36,9 @@ public class HomeCardListFragment extends Fragment {
     private View view;
     private RecyclerView recyclerView;
     private List<BookOffline> listData; // list data book offline
-    public static RecyclerListViewAdapter adapter;
+    public static HomeRecyclerListViewAdapter adapter;
 
-    private BookOfflineDao bookOfflineDao; //data access object
+    private static BookOfflineDao bookOfflineDao; //data access object
 
     /**
      * fragment life cycle
@@ -67,17 +72,19 @@ public class HomeCardListFragment extends Fragment {
             listData = bookOfflineDao.loadAllBookOffline();
 
             // set up data
-            adapter = new RecyclerListViewAdapter(getActivity(), listData, new CustomItemClickListener() {
+            adapter = new HomeRecyclerListViewAdapter(getActivity(), listData, new CustomItemClickListener() {
                 @Override
                 public void onItemClick(View v, int position) {
-                    BookOffline book = (BookOffline) adapter.getItem(position);
+                    BookOffline book = adapter.getItem(position);
                     Intent intent = new Intent(getActivity(), ReadingActivity.class);
                     intent.putExtra("BOOK", book);
                     startActivity(intent);
                 }
+
                 @Override
-                public void onItemLongClick(View v, final int position) {
-                    showDialog(getActivity().getApplicationContext());
+                public void onItemLongClick(View view, final int position) {
+                    BookOffline book = adapter.getItem(position);
+                    showDialog(view, position, book.getBookName());
                 }
             });
             recyclerView.setAdapter(adapter);
@@ -86,20 +93,54 @@ public class HomeCardListFragment extends Fragment {
         }
     }
 
-    public static void showDialog(Context activity) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setMessage("Your Message")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+    public static void showDialog(final View view, final int position, String bookName) {
 
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+        AlertDialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(MyApp.getAppContext());
+        builder.setTitle("Xóa sách");
+        builder.setIcon(R.drawable.ic_action_delete);
 
+        builder.setMessage("Bạn muốn xóa " + bookName + " ?");
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                try {
+                    BookFavoriteDao bookFavoriteDao = new BookFavoriteDao(MyApp.getAppContext());
+                    BookOffline book = adapter.getItem(position);
+
+                    int resultDel = bookOfflineDao.deleteBookOffline(book.getBookId());
+                    bookFavoriteDao.delBookFavorite(book.getBookId());
+
+                    FileHandler.deleteFolderFromSdcard(new File(FileHandler.ROOT_PATH + book.getBookFolder()));
+
+                    if (resultDel > 0) {
+                        adapter.eventDelABook(position);
+                    } else {
+                        MZLog.d("ERROR: HomeCardListFragment : showDialog");
                     }
-                }).show();
+                } catch (Exception e) {
+                    MZLog.d("ERROR: HomeCardListFragment : showDialog");
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    view.animate().alpha(0).setDuration(ANIMATION_DURATION)
+                            .withEndAction(new Runnable() {
+                                @Override
+                                public void run() {
+                                }
+                            });
+                }
+            }
+        });
+        dialog = builder.create();
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        dialog.show();
     }
 }

@@ -13,34 +13,50 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.List;
-import java.util.Locale;
 
 import ebook.ken.activity.R;
+import ebook.ken.listener.CustomItemClickListener;
 import ebook.ken.myui.imageloader.ImageLoader;
 import ebook.ken.objects.BookOffline;
-import ebook.ken.objects.BookOnline;
-import ebook.ken.utils.JsonHandler;
 
 
 /**
  * Created by ken on 04/11/2015.
  */
-public class RecyclerGridViewAdapter extends RecyclerView.Adapter<RecyclerGridViewAdapter.ListViewHolder> {
+public class HomeRecyclerGridViewAdapter extends RecyclerView.Adapter<HomeRecyclerGridViewAdapter.ListViewHolder> {
 
     private Context context;
     List<BookOffline> listBookOnline = null;
     public ImageLoader imageLoader;
+    CustomItemClickListener listener;
 
-    public RecyclerGridViewAdapter(Context mContext, List<BookOffline> mListBookOnline) {
+    public HomeRecyclerGridViewAdapter(Context mContext, List<BookOffline> mListBookOnline, CustomItemClickListener listener) {
         this.context = mContext;
         this.listBookOnline = mListBookOnline;
         imageLoader = new ImageLoader(context);
+        this.listener = listener;
     }
 
     @Override
     public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_gridview, parent, false);
-        return new ListViewHolder(itemView);
+        final ListViewHolder mViewHolder = new ListViewHolder(itemView);
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(v, mViewHolder.getPosition());
+            }
+        });
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                listener.onItemLongClick(v, mViewHolder.getPosition());
+                return true;
+            }
+        });
+        return mViewHolder;
     }
 
     @Override
@@ -55,7 +71,10 @@ public class RecyclerGridViewAdapter extends RecyclerView.Adapter<RecyclerGridVi
             }
         } else {
             Resources res = context.getResources();
-            Drawable myDrawable = context.getDrawable(R.drawable.default_book_cover);
+            Drawable myDrawable = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                myDrawable = context.getDrawable(R.drawable.default_book_cover);
+            }
             holder.ivCardImage.setImageDrawable(myDrawable);
         }// end-if;
     }

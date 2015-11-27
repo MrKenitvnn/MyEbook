@@ -1,11 +1,13 @@
 package ebook.ken.fragment;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,19 +16,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
 import ebook.ken.activity.R;
 import ebook.ken.activity.SectionActivity;
 import ebook.ken.adapter.FragmentBookStoreAdapter;
@@ -36,6 +40,7 @@ import ebook.ken.utils.JsonHandler;
 import ebook.ken.utils.MZLog;
 import ebook.ken.utils.MyUtils;
 import ebook.ken.utils.MyApp;
+import ebook.ken.utils.VolleyRequest;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 
 /**
@@ -45,6 +50,8 @@ import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 public class BookStoreFragment extends Fragment {
 
     private View view;
+
+    @Bind(R.id.lvStore)
     PullToRefreshListView lvStore;
 
     @Bind(R.id.tvIsOnline)
@@ -68,15 +75,16 @@ public class BookStoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_book_store, container, false);
-        lvStore = (PullToRefreshListView) view.findViewById(R.id.lvStore);
-
         ButterKnife.bind(this, view);
+
         // events
         lvStore.setOnItemClickListener(lvStoreItemClick);
         lvStore.setOnRefreshListener(lvStoreRefresh);
 
+        setHasOptionsMenu(true);
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -84,11 +92,21 @@ public class BookStoreFragment extends Fragment {
         loadDataFromServer();
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem item = menu.findItem(R.id.search);
+        item.setVisible(false);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
 
     /**
      * events
@@ -97,14 +115,10 @@ public class BookStoreFragment extends Fragment {
         @Override
         public void onRefresh(PullToRefreshBase pullToRefreshBase) {
             try {
-
-                if (MyUtils.isOnline(getActivity())) {
-                    new AsyncLoadBookByFirstPage().execute();
+                if (MyUtils.isOnline(MyApp.getAppContext())) {
+                    requestBookByPage(0);
                     tvSectionName.setText("Thể loại");
-                    MyApp.isInSection = false;
                 } else {
-                    lvStore.onRefreshComplete();
-                    // thong bao khong co ket noi mang
                     tvIsOnline.setVisibility(View.VISIBLE);
                 }
             } catch (Exception ex) {
@@ -153,8 +167,13 @@ public class BookStoreFragment extends Fragment {
                 tvSectionName.setText(result.getSectionName());
 
                 // load book by section
-                if (MyUtils.isOnline(getActivity())) {
-                    new AsyncLoadBookBySection().execute(result.getSectionId());
+                if (MyUtils.isOnline(MyApp.getAppContext())) {
+                    pbRefresh.setVisibility(View.VISIBLE);// show progressbar
+                    // set list empty
+                    adapter = new FragmentBookStoreAdapter(getActivity(), new ArrayList<BookOnline>());
+                    lvStore.setAdapter(adapter);
+
+                    requestBookBySection(result.getSectionId());
                 } else {
                     Toast.makeText(getActivity(), "Hiện không có kết nối internet", Toast.LENGTH_SHORT).show();
                 }
@@ -172,21 +191,19 @@ public class BookStoreFragment extends Fragment {
      * function
      */
     private void loadDataFromServer() {
-
-        if (MyUtils.isOnline(getActivity())) {
-
-            // load section
-            if (MyApp.listSection == null) {
-                new AsyncLoadSection().execute();
-            }
-
+        if (MyUtils.isOnline(MyApp.getAppContext())) {
             // load first page of book store
             if (MyApp.listBookOnlineFirstPage == null) {
-                new AsyncLoadBookByFirstPage().execute();
+                requestBookByPage(0);
             } else {
                 adapter = new FragmentBookStoreAdapter(getActivity(), MyApp.listBookOnlineFirstPage);
                 lvStore.setAdapter(adapter);
                 tvSectionName.setText("Thể Loại");
+            }
+
+            // load section
+            if (MyApp.listSection == null) {
+                requestSection();
             }
         } else {
             tvIsOnline.setVisibility(View.VISIBLE);
@@ -194,111 +211,104 @@ public class BookStoreFragment extends Fragment {
                 lvStore.onRefreshComplete();
             }
         }
-
     }//end-func loadDataFromServer
 
+
     /**
-     * async task
+     * volley request
      */
+    private void requestSection() {
+        JsonArrayRequest req = new JsonArrayRequest(JsonHandler.URL_LOAD_SECTION,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            MZLog.d(response.toString());
+                            MyApp.listSection = JsonHandler.makeSectionFromJsonArray(response);
+                        } catch (Exception e) {
+                            MZLog.d("ERROR : BookStoreFragment : requestSection");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        MZLog.d("BookStoreFragment : requestSection");
+                    }
+                });
+        VolleyRequest.getInstance().addToRequestQueue(req, MyApp.getAppContext());
+    }
 
-    private class AsyncLoadSection extends AsyncTask<Void, Void, List<SectionOnline>> {
+    private void requestBookBySection(int sectionId) {
+        JsonArrayRequest req = new JsonArrayRequest(JsonHandler.BASE_URL + "load_book.php?section_id=" + sectionId,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            MZLog.d(response.toString());
 
-        @Override
-        protected void onPreExecute() {
+                            pbRefresh.setVisibility(View.GONE);
+                            tvIsOnline.setVisibility(View.GONE);
+                            lvStore.onRefreshComplete();
 
-        }
+                            MyApp.listBookBySection = JsonHandler.listBookFromJsonArray(response);
+                            adapter = new FragmentBookStoreAdapter(getActivity(), MyApp.listBookBySection);
+                            lvStore.setAdapter(adapter);
 
-        @Override
-        protected List<SectionOnline> doInBackground(Void... params) {
-            // get list section online in backgound
-            return JsonHandler.getSectionOnline();
-        }
+                        } catch (Exception e) {
+                            MZLog.d("ERROR : BookStoreFragment : requestBookByPage");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            try {
+                                pbRefresh.setVisibility(View.GONE);
+                                tvIsOnline.setVisibility(View.VISIBLE);
+                                tvIsOnline.setText("Server not found.");
+                            } catch (Exception e) {
+                                MZLog.d("ERROR : BookStoreFragment : requestBookBySection");
+                            }
+                        }
+                    });
+        VolleyRequest.getInstance().addToRequestQueue(req, MyApp.getAppContext());
+    }
 
-        @Override
-        protected void onPostExecute(List<SectionOnline> result) {
-            MyApp.listSection = result;
-        }
-    }// end-async AsyncLoadSection
+    private void requestBookByPage (int page) {
+        pbRefresh.setVisibility(View.VISIBLE);// show progressbar
+        tvIsOnline.setVisibility(View.GONE);// hide message no internet access
 
+        JsonArrayRequest req = new JsonArrayRequest(JsonHandler.BASE_URL + "load_book.php?page=" + page,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            MZLog.d(response.toString());
 
-    private class AsyncLoadBookByFirstPage extends AsyncTask<Void, Void, List<BookOnline>> {
+                            pbRefresh.setVisibility(View.GONE);
+                            tvIsOnline.setVisibility(View.GONE);
 
-        @Override
-        protected void onPreExecute() {
-            // show progressbar
-            pbRefresh.setVisibility(View.VISIBLE);
-            // hide message no internet access
-            tvIsOnline.setVisibility(View.GONE);
-        }
+                            MyApp.listBookOnlineFirstPage = JsonHandler.listBookFromJsonArray(response);
+                            adapter = new FragmentBookStoreAdapter(getActivity(), MyApp.listBookOnlineFirstPage);
+                            lvStore.setAdapter(adapter);
 
-        @Override
-        protected List<BookOnline> doInBackground(Void... params) {
-            try {
-                return JsonHandler.getBookOnline(JsonHandler.GET_BOOK_BY_PAGE,
-                        String.valueOf(0));
-            } catch (JSONException e) {
-                MZLog.d(Log.getStackTraceString(e));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<BookOnline> result) {
-
-            pbRefresh.setVisibility(View.GONE);
-            lvStore.onRefreshComplete();
-
-            if (result != null) {
-                MyApp.listBookOnlineFirstPage = result;
-                adapter = new FragmentBookStoreAdapter(getActivity(), result);
-                lvStore.setAdapter(adapter);
-            }
-        }
-    }// end-async AsyncLoadBookByFirstPage
-
-
-    private class AsyncLoadBookBySection extends AsyncTask<Integer, Void, List<BookOnline>> {
-        @Override
-        protected void onPreExecute() {
-            // show progressbar
-            pbRefresh.setVisibility(View.VISIBLE);
-            // hide message no internet access
-            tvIsOnline.setVisibility(View.GONE);
-
-            // set list empty
-            adapter = new FragmentBookStoreAdapter(getActivity(), new ArrayList<BookOnline>());
-            lvStore.setAdapter(adapter);
-        }
-
-        @Override
-        protected List<BookOnline> doInBackground(Integer... params) {
-            try {
-                return MyApp.listBookBySection = JsonHandler
-                        .getBookOnline(JsonHandler.GET_BOOK_BY_SECTION, "" + params[0]);
-
-            } catch (JSONException e) {
-                MZLog.d(Log.getStackTraceString(e));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<BookOnline> result) {
-
-            try {
-                pbRefresh.setVisibility(View.GONE);
-                lvStore.onRefreshComplete();
-
-                // state list on view book of section
-                MyApp.isInSection = true;
-
-                if (result != null) {
-                    adapter = new FragmentBookStoreAdapter(getActivity(), result);
-                    lvStore.setAdapter(adapter);
-                }// end-if
-            } catch (Exception ex) {
-                MZLog.d(Log.getStackTraceString(ex));
-            }
-        }
-    }// end-async AsyncLoadBookByFirstPage
+                            lvStore.onRefreshComplete();
+                        } catch (Exception e) {
+                            MZLog.d("ERROR : BookStoreFragment : requestBookByPage");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        try {
+                            pbRefresh.setVisibility(View.GONE);
+                            tvIsOnline.setVisibility(View.VISIBLE);
+                            tvIsOnline.setText("Server not found.");
+                            lvStore.onRefreshComplete();
+                        } catch (Exception e) {
+                            MZLog.d("ERROR : BookStoreFragment : requestBookByPage");
+                        }
+                    }
+                });
+        VolleyRequest.getInstance().addToRequestQueue(req, MyApp.getAppContext());
+    }
 }

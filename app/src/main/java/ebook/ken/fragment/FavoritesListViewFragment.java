@@ -52,7 +52,7 @@ public class FavoritesListViewFragment extends Fragment {
     public void onResume() {
         super.onResume();
         try {
-            //get all book
+            //get all book favorite
             listData = MyApp.listAllBookFavorites;
 
             // create adapter

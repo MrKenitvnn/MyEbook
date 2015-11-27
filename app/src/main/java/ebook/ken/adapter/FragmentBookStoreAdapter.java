@@ -17,52 +17,57 @@ import ebook.ken.objects.BookOnline;
 import ebook.ken.utils.JsonHandler;
 
 
-public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline>{
-	
-	private ImageView ivCover;
-	private TextView tvNameBookOnline, tvAuthorBookOnline, tvDownloadTotal;
-	private RatingBar ratingBar;
-	public ImageLoader imageLoader;
+public class FragmentBookStoreAdapter extends ArrayAdapter<BookOnline> {
 
+    private LayoutInflater mInflater;
+    public ImageLoader imageLoader;
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO 
-	
-	public FragmentBookStoreAdapter(Context context, List<BookOnline> listData) {
-		super(context, R.layout.item_book_store, listData);
-		imageLoader = new ImageLoader(context);
-	}
+    private static class ViewHolder {
+        private ImageView ivCover;
+        private TextView tvNameBookOnline, tvAuthorBookOnline, tvDownloadTotal;
+        private RatingBar ratingBar;
+    }
 
+    /**
+     * constructor
+     */
+    public FragmentBookStoreAdapter(Context context, List<BookOnline> listData) {
+        super(context, R.layout.item_book_store, listData);
+        imageLoader = new ImageLoader(context);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
-	////////////////////////////////////////////////////////////////////////////////
-	// TODO 
-	
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+    /**
+     * get item view
+     */
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-		// get item by position
-		BookOnline itemBook = getItem(position);
-		
-		// Check if an existing view is being reused, otherwise inflate the view
-		if (convertView == null) {
-			convertView = LayoutInflater.from(getContext()).inflate(
-					R.layout.item_book_store, parent, false);
-		}
+        View view = convertView;
+        final ViewHolder viewHolder;
+        BookOnline itemBook = getItem(position);// get item by position
 
-		ratingBar			= (RatingBar) convertView.findViewById(R.id.ratingBar);
-		ivCover				= (ImageView) convertView.findViewById(R.id.ivCoverBookStore);
-		tvNameBookOnline	= (TextView) convertView.findViewById(R.id.tvNameBookStore);
-		tvAuthorBookOnline	= (TextView) convertView.findViewById(R.id.tvAuthorBookOnline);
-		tvDownloadTotal		= (TextView) convertView.findViewById(R.id.tvDownloadTotal);
+        if (view == null) {
+            viewHolder = new ViewHolder();
+            view = mInflater.inflate(R.layout.item_book_store, parent, false);
 
+            viewHolder.ivCover = (ImageView) view.findViewById(R.id.ivCoverBookStore);
+            viewHolder.ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+            viewHolder.tvDownloadTotal = (TextView) view.findViewById(R.id.tvDownloadTotal);
+            viewHolder.tvNameBookOnline = (TextView) view.findViewById(R.id.tvNameBookStore);
+            viewHolder.tvAuthorBookOnline = (TextView) view.findViewById(R.id.tvAuthorBookOnline);
 
-		tvDownloadTotal		.setText(String.valueOf(itemBook.getBookTotalDownload()));
-		tvNameBookOnline	.setText(itemBook.getBookName());
-		tvAuthorBookOnline	.setText(itemBook.getBookAuthor());
-		ratingBar           .setRating(itemBook.getBookRate());
-		imageLoader			.DisplayImage(JsonHandler.BASE_URL + itemBook.getBookCoverPath(), ivCover);
-		
-		return convertView;
-	}
+            view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
+        }
 
+        viewHolder.tvDownloadTotal.setText(String.valueOf(itemBook.getBookTotalDownload()));
+        viewHolder.tvNameBookOnline.setText(itemBook.getBookName());
+        viewHolder.tvAuthorBookOnline.setText(itemBook.getBookAuthor());
+        viewHolder.ratingBar.setRating(itemBook.getBookRate());
+        imageLoader.DisplayImage(JsonHandler.BASE_URL + itemBook.getBookCoverPath(), viewHolder.ivCover);
+
+        return view;
+    }
 }

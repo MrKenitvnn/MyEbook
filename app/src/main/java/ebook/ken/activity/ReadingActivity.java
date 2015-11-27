@@ -129,6 +129,7 @@ public class ReadingActivity extends Activity {
         protected void onPreExecute() {
             // startingMillis = System.currentTimeMillis();
             dialog.setMessage("Loading..");
+            dialog.setCancelable(false);
             this.dialog.show();
         }
 
@@ -283,8 +284,8 @@ public class ReadingActivity extends Activity {
                 webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
                 webview.requestFocus(View.FOCUS_DOWN);
 
-                webview.loadUrl("file://" + FileHandler.ROOT_PATH
-                        + FileHandler.DATA_FOLDER + "/index.html");
+                webview.loadUrl("file://" + FileHandler.ROOT_PATH + FileHandler.DATA_FOLDER + "/index.html");
+//                webview.loadUrl(FileHandler.ROOT_PATH + FileHandler.DATA_FOLDER + "/index.html");
                 if (this.dialog.isShowing()) {
                     this.dialog.dismiss();
                 }

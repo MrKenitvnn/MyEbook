@@ -25,10 +25,12 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -99,7 +101,6 @@ public class BookStoreDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        MyApp.isNoBack = false;
     }
 
     /**
@@ -240,7 +241,6 @@ public class BookStoreDetailFragment extends Fragment {
                     String opfFilePath = "";
                     String coverFilePath = "";
 
-
                     // step 1: create folder of book
                     String bookFolder = String.valueOf(bookOfflineDao.getLastId());
                     String bookFolderPath = FileHandler.createBookFolder(bookFolder);
@@ -298,9 +298,8 @@ public class BookStoreDetailFragment extends Fragment {
 
             if (result) {
                 Toast.makeText(getActivity(), "Tải thành công: " + MyApp.currentBookDetail.getBookName(), Toast.LENGTH_SHORT).show();
-
-                // TODO note: put to update download total's book plus = 1
-                new AsyncPlusDownload().execute(bookOffline);
+                // note: put to update download total's book plus = 1
+                new AsyncPlusDownload().execute(MyApp.currentBookDetail);
             } else {
                 Toast.makeText(getActivity(), "Cuốn sách này đã có!", Toast.LENGTH_SHORT).show();
             }
@@ -311,12 +310,12 @@ public class BookStoreDetailFragment extends Fragment {
     /**
      * Asynctask for plus value download
      */
-    class AsyncPlusDownload extends AsyncTask<BookOffline, Void, Void> {
+    class AsyncPlusDownload extends AsyncTask<BookOnline, Void, Void> {
 
         @Override
-        protected Void doInBackground(BookOffline... params) {
+        protected Void doInBackground(BookOnline... params) {
             try {
-                sendAddPlusDownload(params[0].getBookIdOnline());
+                sendAddPlusDownload(params[0].getBookId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -325,24 +324,32 @@ public class BookStoreDetailFragment extends Fragment {
     }
 
     private void sendAddPlusDownload(int book_id) throws Exception {
-
-        String url = "http://mrkenitvnn.esy.es/api/includes/add_download.php";
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        //add reuqest header
-        con.setRequestMethod("POST");
-        /*con.setRequestProperty("User-Agent", USER_AGENT);*/
-        /*con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");*/
-
-        String urlParameters = "book_id=" + book_id;
-
-        // Send post request
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(urlParameters);
-        wr.flush();
-        wr.close();
+        String uel = "http://mrkenitvnn.esy.es/api/includes/add_download.php?book_id=20";
+        String url = "http://mrkenitvnn.esy.es/api/includes/add_download.php?book_id="+book_id;
+        HttpURLConnection c = null;
+        try {
+            URL u = new URL(url);
+            c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("GET");
+            c.setRequestProperty("Content-length", "0");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.setConnectTimeout(5000);
+            c.setReadTimeout(5000);
+            c.connect();
+        } catch (MalformedURLException ex) {
+            MZLog.d(Log.getStackTraceString(ex));
+        } catch (IOException ex) {
+            MZLog.d(Log.getStackTraceString(ex));
+        } finally {
+            if (c != null) {
+                try {
+                    c.disconnect();
+                } catch (Exception ex) {
+                    MZLog.d(Log.getStackTraceString(ex));
+                }
+            }
+        }
     }
 
 
@@ -410,6 +417,5 @@ public class BookStoreDetailFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        MyApp.isNoBack = true;
     }
 }

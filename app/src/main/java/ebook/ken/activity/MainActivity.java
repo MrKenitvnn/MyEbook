@@ -10,6 +10,7 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -36,15 +37,12 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
 
     private SharedPreferences prefs = null;
     private Database database;
-    GoogleCloudMessaging gcm;
-
 
     /**
      *  activity life cycle
      */
     @Override
     public void init(Bundle bundle) {
-
         try {
             // set the header image
             this.setDrawerHeaderImage(R.drawable.mat3);
@@ -81,7 +79,7 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
             }// end-if
 
             /**
-             * TODO GCM
+             * GCM
              */
             boolean state = prefs.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
             if (checkPlayServices() && !state ) {
@@ -182,7 +180,7 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
     @Override
     public boolean onQueryTextChange(String newText) {
         Fragment fmHomeContent = getSupportFragmentManager().findFragmentById(R.id.fmHomeContent);
-
+        Fragment fmTarget = (Fragment) getCurrentSection().getTargetFragment();
         if (fmHomeContent instanceof HomeCardListFragment) {
             HomeCardListFragment.adapter.filter(newText);
         } else if (fmHomeContent instanceof HomeCardGridFragment) {
@@ -191,5 +189,4 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
 
         return true;
     }
-
 }
