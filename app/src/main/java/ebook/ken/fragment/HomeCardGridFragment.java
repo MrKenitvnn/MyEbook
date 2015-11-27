@@ -123,23 +123,13 @@ public class HomeCardGridFragment extends Fragment {
                     FileHandler.deleteFolderFromSdcard(new File(FileHandler.ROOT_PATH + book.getBookFolder()));
 
                     if (resultDel > 0) {
-                        // TODO note del a book in gridview
-//                        adapter.eventDelABook(position);
+                        adapter.eventDelABook(position);
                     } else {
                         MZLog.d("ERROR: HomeCardListFragment : showDialog");
                     }
                 } catch (Exception e) {
                     MZLog.d("ERROR: HomeCardListFragment : showDialog");
                 }
-
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                    view.animate().alpha(0).setDuration(ANIMATION_DURATION)
-//                            .withEndAction(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                }
-//                            });
-//                }
             }
         });
         dialog = builder.create();

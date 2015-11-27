@@ -91,8 +91,16 @@ public class HomeRecyclerGridViewAdapter extends RecyclerView.Adapter<HomeRecycl
         return listBookOnline.get(position);
     }
 
+
     /**
-     * TODO: inner class ViewHolder
+     * event del a book
+     */
+    public void eventDelABook(int id) {
+        listBookOnline.remove(id);
+        notifyDataSetChanged();
+    }
+    /**
+     * inner class ViewHolder
      */
     public class ListViewHolder extends RecyclerView.ViewHolder {
 

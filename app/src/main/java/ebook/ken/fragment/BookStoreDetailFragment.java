@@ -21,6 +21,11 @@ import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -44,6 +49,7 @@ import ebook.ken.utils.FileHandler;
 import ebook.ken.utils.JsonHandler;
 import ebook.ken.utils.MZLog;
 import ebook.ken.utils.MyApp;
+import ebook.ken.utils.VolleyRequest;
 
 
 /**
@@ -274,7 +280,7 @@ public class BookStoreDetailFragment extends Fragment {
                             .listEpubChapterData(bookOffline));
 
                 } catch (Exception ex) {
-                    MZLog.d( Log.getStackTraceString(ex));
+                    MZLog.d(Log.getStackTraceString(ex));
                 }
             } catch (Exception ex) {
                 MZLog.d(Log.getStackTraceString(ex));
@@ -315,7 +321,8 @@ public class BookStoreDetailFragment extends Fragment {
         @Override
         protected Void doInBackground(BookOnline... params) {
             try {
-                sendAddPlusDownload(params[0].getBookId());
+//                sendAddPlusDownload(params[0].getBookId());
+                requestAddPlusDownload(params[0].getBookId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -323,35 +330,25 @@ public class BookStoreDetailFragment extends Fragment {
         }
     }
 
-    private void sendAddPlusDownload(int book_id) throws Exception {
-        String uel = "http://mrkenitvnn.esy.es/api/includes/add_download.php?book_id=20";
-        String url = "http://mrkenitvnn.esy.es/api/includes/add_download.php?book_id="+book_id;
-        HttpURLConnection c = null;
-        try {
-            URL u = new URL(url);
-            c = (HttpURLConnection) u.openConnection();
-            c.setRequestMethod("GET");
-            c.setRequestProperty("Content-length", "0");
-            c.setUseCaches(false);
-            c.setAllowUserInteraction(false);
-            c.setConnectTimeout(5000);
-            c.setReadTimeout(5000);
-            c.connect();
-        } catch (MalformedURLException ex) {
-            MZLog.d(Log.getStackTraceString(ex));
-        } catch (IOException ex) {
-            MZLog.d(Log.getStackTraceString(ex));
-        } finally {
-            if (c != null) {
-                try {
-                    c.disconnect();
-                } catch (Exception ex) {
-                    MZLog.d(Log.getStackTraceString(ex));
-                }
-            }
-        }
-    }
 
+    /**
+     * volley request
+     */
+    private void requestAddPlusDownload(int book_id) {
+        String url = "http://mrkenitvnn.esy.es/api/includes/add_download.php?book_id=" + book_id;
+        StringRequest req = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        VolleyRequest.getInstance().addToRequestQueue(req, MyApp.getAppContext());
+    }
 
     /**
      * send rate
