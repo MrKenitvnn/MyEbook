@@ -12,9 +12,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import ebook.ken.dao.Database;
 import ebook.ken.fragment.BookStoreFragment;
@@ -23,10 +29,14 @@ import ebook.ken.fragment.HomeCardGridFragment;
 import ebook.ken.fragment.HomeCardListFragment;
 import ebook.ken.fragment.HomeFragment;
 import ebook.ken.fragment.InfoFragment;
+import ebook.ken.fragment.SearchResultFragment;
 import ebook.ken.gcm.QuickstartPreferences;
 import ebook.ken.gcm.RegistrationIntentService;
 import ebook.ken.utils.FileHandler;
+import ebook.ken.utils.JsonHandler;
 import ebook.ken.utils.MZLog;
+import ebook.ken.utils.MyApp;
+import ebook.ken.utils.VolleyRequest;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 
 public class MainActivity extends MaterialNavigationDrawer implements SearchView.OnQueryTextListener{
@@ -174,7 +184,33 @@ public class MainActivity extends MaterialNavigationDrawer implements SearchView
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        Fragment fmTarget = (Fragment) getCurrentSection().getTargetFragment();
+
+        if (fmTarget instanceof BookStoreFragment) {
+            // step 1: send query to get data from server
+            JsonArrayRequest req = new JsonArrayRequest(JsonHandler.BASE_URL + "load_book.php?book_name=" + query,
+                    new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            try {
+                                // step 2: if have some data to show -> open search result activity
+                                MZLog.d(response.toString());
+                                MyApp.listBookBySearch = JsonHandler.listBookFromJsonArray(response);
+                                ((MaterialNavigationDrawer) MainActivity.this).setFragmentChild(new SearchResultFragment(), "Kết quả tìm kiếm");
+                            } catch (JSONException e) {
+                                MZLog.e("ERROR : MainActivity : onQueryTextSubmit");
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(MainActivity.this, "Không tìm thấy.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            VolleyRequest.getInstance().addToRequestQueue(req, MyApp.getInstance());
+        }
+        return true;
     }
 
     @Override

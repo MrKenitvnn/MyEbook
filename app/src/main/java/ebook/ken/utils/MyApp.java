@@ -16,6 +16,7 @@ public class MyApp extends Application {
     public static List<SectionOnline> listSection = null;
     public static List<BookOnline> listBookOnlineFirstPage = null;
     public static List<BookOnline> listBookBySection = null;
+    public static List<BookOnline> listBookBySearch = null;
     public static BookOnline currentBookDetail = null;
     public static SectionOnline currentSection = null;
 

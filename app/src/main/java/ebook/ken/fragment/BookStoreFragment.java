@@ -95,8 +95,6 @@ public class BookStoreFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        MenuItem item = menu.findItem(R.id.search);
-        item.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
